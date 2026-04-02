@@ -183,15 +183,15 @@ a{color:inherit;text-decoration:none}
 .gate-form-panel{border-radius:0 4px 4px 0}
 .gate-icon{width:60px;height:60px;margin:0 auto 16px;background:linear-gradient(135deg,var(--babson-green),var(--peacock));border-radius:50%;display:flex;align-items:center;justify-content:center}
 .gate-icon svg{width:28px;height:28px;fill:none;stroke:var(--gold-light);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.gate-title{font-family:'Merriweather',serif;font-size:1.3rem;color:var(--babson-green);text-align:center;margin-bottom:6px}
-.gate-sub{color:var(--text-soft);text-align:center;font-size:.85rem;margin-bottom:18px;max-width:400px;margin-left:auto;margin-right:auto}
-.gate-benefits{text-align:center;margin-bottom:16px;font-size:.82rem}
+.gate-title{font-family:'Merriweather',serif;font-size:1.5rem;color:var(--babson-green);text-align:center;margin-bottom:8px}
+.gate-sub{color:var(--text-soft);text-align:center;font-size:.92rem;margin-bottom:20px;max-width:400px;margin-left:auto;margin-right:auto;line-height:1.55}
+.gate-benefits{text-align:center;margin-bottom:20px;font-size:.88rem;background:linear-gradient(135deg,rgba(0,102,68,.05),rgba(238,175,0,.04));border:1.5px solid rgba(0,102,68,.12);border-radius:8px;padding:16px 20px}
 .gate-benefits-list{display:inline-block;text-align:left}
-.gate-benefits-item{padding:4px 0;color:var(--text-soft);display:flex;gap:8px;align-items:flex-start}
-.gate-benefits-item:before{content:'✓';color:var(--success);font-weight:700;flex-shrink:0}
-.gate-trust{display:flex;justify-content:center;gap:16px;margin-bottom:16px;flex-wrap:wrap}
-.gate-trust-item{display:flex;align-items:center;gap:5px;font-size:.68rem;color:var(--text-soft)}
-.gate-trust-item svg{width:13px;height:13px;stroke:var(--success);fill:none;stroke-width:2}
+.gate-benefits-item{padding:6px 0;color:var(--text);display:flex;gap:10px;align-items:flex-start;font-weight:500}
+.gate-benefits-item:before{content:'✓';color:var(--babson-green);font-weight:700;flex-shrink:0;font-size:1.1rem}
+.gate-trust{display:flex;justify-content:center;gap:18px;margin-bottom:18px;flex-wrap:wrap}
+.gate-trust-item{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--text-soft);font-weight:600}
+.gate-trust-item svg{width:14px;height:14px;stroke:var(--babson-green);fill:none;stroke-width:2.5}
 @media(max-width:768px){
   .gate-layout{grid-template-columns:1fr}
   .gate-sketch-panel{border-radius:4px 4px 0 0;padding:32px 24px}
@@ -646,6 +646,7 @@ a{color:inherit;text-decoration:none}
             <div class="gate-sketch-stat-label">Employers expect<br/>AI-ready hires</div>
           </div>
         </div>
+        <div style="text-align:center;margin-top:12px;font-size:.6rem;color:rgba(255,255,255,.4);position:relative;z-index:1;line-height:1.4">Sources: PwC Global AI Jobs Barometer 2025; CarringtonCrisp See the Future 2026 (1,863 respondents, 40 countries)</div>
       </div>
       <!-- RIGHT: Form -->
       <div class="card gate-form-panel" style="border-radius:0 4px 4px 0">
@@ -860,7 +861,7 @@ function renderQuestion(){
   document.getElementById('progressText').textContent=`Question ${currentQ+1} of ${QUESTIONS.length}`;
   document.getElementById('progressFill').style.width=pct+'%';
   showMotivation();
-  timeLeft=q.difficulty==='hard'?25:q.difficulty==='medium'?22:20;startTimer();
+  timeLeft=q.difficulty==='hard'?40:q.difficulty==='medium'?35:30;startTimer();
   const letters=['A','B','C','D'];
   let html=`<div class="q-category"><span class="label">${q.category}</span></div>`;
   if(q.scenario)html+=`<div class="q-scenario">${q.scenario}</div>`;
@@ -874,7 +875,7 @@ function renderQuestion(){
 function startTimer(){
   clearInterval(timer);const display=document.getElementById('timerDisplay'),timerEl=document.getElementById('quizTimer');
   display.textContent=timeLeft+'s';timerEl.classList.remove('warning');
-  timer=setInterval(()=>{timeLeft--;display.textContent=timeLeft+'s';if(timeLeft<=5)timerEl.classList.add('warning');if(timeLeft<=0){clearInterval(timer);answers[currentQ]={selected:-1,correct:QUESTIONS[currentQ].correct,isCorrect:false,timeTaken:20,timedOut:true};showTimeoutFeedback()}},1000);
+  timer=setInterval(()=>{timeLeft--;display.textContent=timeLeft+'s';if(timeLeft<=5)timerEl.classList.add('warning');if(timeLeft<=0){clearInterval(timer);const tq=QUESTIONS[currentQ];answers[currentQ]={selected:-1,correct:tq.correct,isCorrect:false,timeTaken:tq.difficulty==='hard'?40:tq.difficulty==='medium'?35:30,timedOut:true};showTimeoutFeedback()}},1000);
 }
 
 function showTimeoutFeedback(){
@@ -884,7 +885,7 @@ function showTimeoutFeedback(){
 
 function selectOption(el,idx){
   if(answers[currentQ]!==undefined)return;clearInterval(timer);
-  const q=QUESTIONS[currentQ],isCorrect=idx===q.correct,elapsed=(q.difficulty==='hard'?25:q.difficulty==='medium'?22:20)-timeLeft;
+  const q=QUESTIONS[currentQ],isCorrect=idx===q.correct,elapsed=(q.difficulty==='hard'?40:q.difficulty==='medium'?35:30)-timeLeft;
   answers[currentQ]={selected:idx,correct:q.correct,isCorrect,timeTaken:elapsed,timedOut:false};
   document.querySelectorAll('.opt').forEach((o,i)=>{o.style.pointerEvents='none';if(i===q.correct)o.classList.add('correct');if(i===idx&&!isCorrect)o.classList.add('incorrect')});
   document.getElementById('btnNext').disabled=false;
