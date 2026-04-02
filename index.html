@@ -404,7 +404,7 @@ a{color:inherit;text-decoration:none}
   <div class="hero-grid">
     <div class="hero-left">
       <h1>How Strong Are Your<br><em>Practical AI Skills?</em></h1>
-      <p class="hero-sub">AI-skilled professionals earn up to 56% more. This 3-minute assessment benchmarks your practical AI abilities against thousands of other professionals and reveals exactly where you stand.</p>
+      <p class="hero-sub">AI-skilled workers command a 56% wage premium (PwC, 2025). 77% of employers expect AI-ready professionals — yet 58% say they're not getting them. This 3-minute assessment benchmarks your practical AI abilities and reveals exactly where you stand.</p>
       <div class="hero-buttons">
         <button class="hero-cta" onclick="showSection('gateSection')">Start Free Assessment →</button>
         <button class="hero-secondary" onclick="document.getElementById('howSection').scrollIntoView({behavior:'smooth'})">How It Works</button>
@@ -445,8 +445,8 @@ a{color:inherit;text-decoration:none}
 
 <!-- Inspirational Quote — Hero -->
 <div class="inspire-quote delay-1" style="padding:20px 32px;margin:0 auto;max-width:900px">
-  <blockquote style="color:rgba(255,255,255,.8);font-size:.88rem">"AI won't replace you — but a professional who knows how to use AI will."</blockquote>
-  <cite style="color:var(--bright-gold);opacity:.6">Harvard Business Review</cite>
+  <blockquote style="color:rgba(255,255,255,.8);font-size:.88rem">"Much like Excel quietly became mandatory in the 90s without anyone formally announcing it — AI fluency is becoming table stakes."</blockquote>
+  <cite style="color:var(--bright-gold);opacity:.6">Ed Bernier, Assistant Dean for Career Services, Duke University</cite>
 </div>
 
 <!-- Trust Bar (Authority) -->
@@ -497,8 +497,8 @@ a{color:inherit;text-decoration:none}
 
 <!-- Inspirational Quote — How It Works -->
 <div class="inspire-quote delay-2">
-  <blockquote>"The biggest risk isn't that AI takes your job — it's that you fall behind the professionals already using it to accelerate their pipeline and close rates."</blockquote>
-  <cite>McKinsey Global Institute, 2025</cite>
+  <blockquote>"Employers are increasingly expecting professionals to harness AI for strategic decision-making, predictive modeling, and analytics. The rise of AI-first philosophies underscores the demand for professionals who prioritize AI at the core of operations."</blockquote>
+  <cite>Kerry Kidwell-Slak, Senior Director of Graduate Career Coaching, Maryland Smith</cite>
 </div>
 
 <!-- Live Activity Feed (Social Proof) -->
@@ -602,8 +602,8 @@ a{color:inherit;text-decoration:none}
       <div class="reveal-block" id="whyBlock"><div class="why-matters" id="whyMatters"><h3>⚡ Why This Matters Right Now</h3><p id="whyText"></p></div></div>
       <div class="reveal-block" id="resultsQuoteBlock">
         <div class="inspire-quote" style="opacity:1;animation:none;margin:8px auto 20px">
-          <blockquote>"The professionals who invest in closing their AI skills gaps today will define the leadership of tomorrow."</blockquote>
-          <cite>Harvard Business School, AI & The Future of Work</cite>
+          <blockquote>"The 58% of employers who say universities are not meeting expectations is a market signal no institution — or individual — can afford to ignore."</blockquote>
+          <cite>AACSB Accreditation Research, 2025 | Peter Cohan, Business Schools Face an AI Reckoning</cite>
         </div>
       </div>
       <div class="reveal-block" id="upsellBlock">
@@ -775,9 +775,9 @@ function showMotivation(){
   else{const m=[`These are tough — most professionals find them challenging.`,`Don't focus on score yet — identifying growth areas is the real value.`,`Every gap you find is an opportunity the market rewards.`];msg=m[currentQ%m.length];cls='encourage'}
   let quoteHtml='';
   const QUIZ_QUOTES=[
-    {q:3,text:'"Professionals who master AI tools see a 40% boost in productivity within the first 90 days."',cite:'World Economic Forum, 2025'},
-    {q:8,text:'"AI-skilled sales teams close deals 23% faster and generate 35% more pipeline revenue."',cite:'Forrester Research'},
-    {q:11,text:'"By 2027, 80% of high-earning professionals will use AI daily — the skill gap is a career gap."',cite:'McKinsey Global Institute'}
+    {q:3,text:'"77% of employers now expect AI-ready professionals — yet 58% say universities are falling short. The skills gap is yours to close."',cite:'CarringtonCrisp, See the Future 2026 (1,863 respondents, 40 countries)'},
+    {q:8,text:'"AI-skilled workers command a 56% wage premium. Skills split across two axes: technical proficiency and strategic application — using AI to lower costs, find revenue, and make better decisions."',cite:'PwC, Global AI Jobs Barometer 2025'},
+    {q:11,text:'"During summer internships, students were immediately expected to use AI — often without formal training." The professionals who close this gap now will lead tomorrow.',cite:'Greg Hanifee, Kellogg School of Management'}
   ];
   const matchedQuote=QUIZ_QUOTES.find(qq=>qq.q===currentQ);
   if(matchedQuote){quoteHtml=`<div class="inspire-quiz"><blockquote>${matchedQuote.text}</blockquote><cite>— ${matchedQuote.cite}</cite></div>`}
@@ -828,9 +828,9 @@ function showResults(){
   iA.innerHTML=iH;
 
   const wT=document.getElementById('whyText'),gc=Object.values(r.cats).filter(d=>Math.round(d.correct/d.total*100)<50).length;
-  if(r.pct>=80)wT.innerHTML=`<strong>You're ahead of the curve</strong> — but AI evolves weekly. Professionals who maintain their edge systematically close emerging gaps before they become career risks. Your detailed report pinpoints exactly where to focus next.`;
-  else if(r.pct>=60)wT.innerHTML=`You identified <strong>${gc} critical skill gap${gc!==1?'s':''}</strong> actively holding you back. Research shows professionals who close these gaps see an average <strong>34% productivity increase</strong> within 90 days. Your report shows you exactly how.`;
-  else wT.innerHTML=`Your results reveal <strong>${gc} significant gap${gc!==1?'s':''}</strong>. The AI skills premium is growing <strong>12% per quarter</strong>. Every month you wait, the gap widens. Your report gives you a specific, actionable plan to catch up — fast.`;
+  if(r.pct>=80)wT.innerHTML=`<strong>You're ahead of the curve</strong> — but AI evolves weekly. According to PwC's 2025 AI Jobs Barometer, the <strong>56% wage premium</strong> for AI-skilled workers keeps growing. Professionals who maintain their edge systematically close emerging gaps. Your detailed report pinpoints exactly where to focus next.`;
+  else if(r.pct>=60)wT.innerHTML=`You identified <strong>${gc} critical skill gap${gc!==1?'s':''}</strong>. CarringtonCrisp's 2026 survey of 1,863 respondents across 40 countries found <strong>77% of employers now expect AI-ready professionals</strong>. The gap between where you are and where employers need you is closable — your report shows exactly how.`;
+  else wT.innerHTML=`Your results reveal <strong>${gc} significant gap${gc!==1?'s':''}</strong>. PwC reports a <strong>56% wage premium</strong> for AI-skilled workers — and it's accelerating. As Ed Bernier of Duke noted, AI fluency became mandatory "without anyone formally announcing it." Your report gives you a specific, actionable plan to catch up — fast.`;
 
   setTimeout(()=>{revealSequence(['breakdownBlock','insightsBlock','whyBlock','resultsQuoteBlock','upsellBlock'],800);setTimeout(()=>{document.querySelectorAll('.breakdown-bar-fill').forEach(b=>{b.style.width=b.dataset.width+'%'})},1000)},1800);
   setTimeout(()=>startCountdown(),4500);
