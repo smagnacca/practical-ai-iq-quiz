@@ -37,7 +37,7 @@
   /* ══════════════════════════════════ */
   /* PROGRESSIVE REVEAL SYSTEM         */
   /* ══════════════════════════════════ */
-  .reveal-step { opacity:0; transform:translateY(10px); transition:opacity .8s ease, transform .8s ease; }
+  .reveal-step { opacity:0; transform:translateY(10px); transition:opacity .92s ease, transform .92s ease; }
   .reveal-step.shown { opacity:1; transform:translateY(0); }
 
   /* ══════════════════════════════════ */
@@ -48,7 +48,7 @@
   .anim-strike.active::after {
     content:''; position:absolute; top:50%; left:0; height:2px;
     background:rgba(255,255,255,.7); width:0;
-    animation: strikeReveal 1.2s ease forwards;
+    animation: strikeReveal 1.4s ease forwards;
   }
 
   @keyframes priceGlow {
@@ -56,7 +56,7 @@
     50% { text-shadow:0 0 24px rgba(238,175,0,.8),0 0 48px rgba(238,175,0,.4); transform:scale(1.05); }
   }
   .glow-price { display:inline-block; }
-  .glow-price.active { animation: priceGlow 2s ease-in-out infinite; }
+  .glow-price.active { animation: priceGlow 2.3s ease-in-out infinite; }
 
   @keyframes ctaPulse {
     0%,100% { box-shadow:0 0 0 0 rgba(238,175,0,.6), 0 4px 16px rgba(0,0,0,.15); }
@@ -64,11 +64,11 @@
   }
   @keyframes ctaShimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
   .cta-pulse { display:inline-block !important; border:2px solid var(--mango) !important; position:relative; overflow:hidden; }
-  .cta-pulse.active { animation: ctaPulse 2s ease-in-out infinite; }
+  .cta-pulse.active { animation: ctaPulse 2.3s ease-in-out infinite; }
   .cta-pulse.active::after {
     content:''; position:absolute; top:0; left:-100%; width:50%; height:100%;
     background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
-    animation: ctaShimmer 2.5s ease-in-out infinite;
+    animation: ctaShimmer 2.9s ease-in-out infinite;
   }
 
   @keyframes goldPulse {
@@ -76,11 +76,11 @@
     50% { box-shadow:0 0 0 10px rgba(201,168,76,0), 0 0 40px rgba(201,168,76,.4); }
   }
   .cta-gold-pulse { display:inline-block !important; border:3px solid var(--gold) !important; position:relative; overflow:hidden; }
-  .cta-gold-pulse.active { animation: goldPulse 2.2s ease-in-out infinite; }
+  .cta-gold-pulse.active { animation: goldPulse 2.5s ease-in-out infinite; }
   .cta-gold-pulse.active::after {
     content:''; position:absolute; top:0; left:-100%; width:50%; height:100%;
     background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
-    animation: ctaShimmer 2s ease-in-out infinite;
+    animation: ctaShimmer 2.3s ease-in-out infinite;
   }
 
   .countdown-box {
@@ -124,7 +124,7 @@
   .rpt-date { color:rgba(255,255,255,.6); font-size:.82rem; margin-top:8px; }
   .rpt-container { max-width:680px; margin:0 auto; padding:0 20px; }
 
-  .rpt-score-hero { display:flex; align-items:center; gap:28px; padding:36px 0 28px; flex-wrap:wrap; justify-content:center; opacity:0; transform:translateY(16px); transition:opacity 1s ease, transform 1s ease; }
+  .rpt-score-hero { display:flex; align-items:center; gap:28px; padding:36px 0 28px; flex-wrap:wrap; justify-content:center; opacity:0; transform:translateY(16px); transition:opacity 1.15s ease, transform 1.15s ease; }
   .rpt-score-hero.shown { opacity:1; transform:translateY(0); }
   @keyframes ringPulse {
     0%,100% { box-shadow:0 0 0 0 rgba(201,168,76,0); border-color:var(--green); }
@@ -140,7 +140,7 @@
   .glass-card {
     background:rgba(255,255,255,.85); backdrop-filter:blur(12px); border:1px solid rgba(0,100,68,.1);
     border-radius:16px; padding:28px; margin-bottom:24px; box-shadow:0 4px 24px rgba(0,0,0,.06);
-    opacity:0; transform:translateY(24px); transition:opacity .8s ease, transform .8s ease;
+    opacity:0; transform:translateY(24px); transition:opacity .92s ease, transform .92s ease;
   }
   .glass-card.visible { opacity:1; transform:translateY(0); }
   .section-title { font-family:'Merriweather',serif; font-size:1.05rem; color:var(--green); margin-bottom:18px; display:flex; align-items:center; gap:10px; }
@@ -151,17 +151,17 @@
   .calc-text { font-size:.88rem; color:#718096; line-height:1.6; }
   .calc-text strong { color:var(--babson-green); }
 
-  .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; opacity:0; transform:translateX(-20px); transition:opacity .6s ease, transform .6s ease; }
+  .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; opacity:0; transform:translateX(-20px); transition:opacity .7s ease, transform .7s ease; }
   .bar-row.revealed { opacity:1; transform:translateX(0); }
   .bar-label { flex:0 0 170px; font-size:.8rem; font-weight:600; color:#2D3748; text-align:right; }
   .bar-track { flex:1; height:20px; background:rgba(0,0,0,.06); border-radius:10px; overflow:hidden; position:relative; }
-  .bar-fill { height:100%; border-radius:10px; width:0; position:relative; transition:width 1.4s cubic-bezier(.4,0,.2,1); }
+  .bar-fill { height:100%; border-radius:10px; width:0; position:relative; transition:width 1.6s cubic-bezier(.4,0,.2,1); }
   .bar-fill::after { content:''; position:absolute; top:0; width:40%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent); animation:barShine 2.5s ease-in-out infinite; }
   @keyframes barShine { 0%{left:-40%} 100%{left:140%} }
   .bar-pct { flex:0 0 42px; font-size:.8rem; font-weight:700; text-align:center; }
   .bar-pct.high { color:var(--success); } .bar-pct.mid { color:var(--mango); } .bar-pct.low { color:var(--danger); }
 
-  .insight-row { display:flex; gap:12px; padding:14px; border-radius:12px; margin-bottom:10px; background:rgba(0,0,0,.02); border-left:4px solid transparent; opacity:0; transform:translateY(12px); transition:opacity .6s ease, transform .6s ease; }
+  .insight-row { display:flex; gap:12px; padding:14px; border-radius:12px; margin-bottom:10px; background:rgba(0,0,0,.02); border-left:4px solid transparent; opacity:0; transform:translateY(12px); transition:opacity .7s ease, transform .7s ease; }
   .insight-row.vis { opacity:1; transform:translateY(0); }
   .insight-row.strength { border-color:var(--success); background:rgba(39,174,96,.04); }
   .insight-row.improve { border-color:var(--mango); background:rgba(238,175,0,.04); }
@@ -170,17 +170,17 @@
   .insight-content h4 { font-size:.86rem; font-weight:700; color:var(--green); margin-bottom:3px; }
   .insight-content p { font-size:.82rem; color:#4A5568; line-height:1.5; }
 
-  .tip-card { background:linear-gradient(135deg,rgba(0,100,68,.04),rgba(54,127,128,.04)); border:1px solid rgba(0,100,68,.12); border-radius:12px; padding:18px; margin-bottom:12px; opacity:0; transform:translateY(12px); transition:opacity .5s ease, transform .5s ease; }
+  .tip-card { background:linear-gradient(135deg,rgba(0,100,68,.04),rgba(54,127,128,.04)); border:1px solid rgba(0,100,68,.12); border-radius:12px; padding:18px; margin-bottom:12px; opacity:0; transform:translateY(12px); transition:opacity .58s ease, transform .58s ease; }
   .tip-card.vis { opacity:1; transform:translateY(0); }
   .tip-card h4 { font-size:.86rem; font-weight:700; color:var(--green); margin-bottom:4px; }
   .tip-card p { font-size:.82rem; color:#4A5568; line-height:1.5; }
 
   .benchmark-bar { height:10px; background:linear-gradient(90deg,var(--danger),var(--mango),var(--success)); border-radius:5px; position:relative; margin:20px 0 32px; }
-  .bm-marker { position:absolute; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; transition:left 1.8s cubic-bezier(.4,0,.2,1); }
+  .bm-marker { position:absolute; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; transition:left 2.1s cubic-bezier(.4,0,.2,1); }
   .bm-dot { width:14px; height:14px; border-radius:50%; border:3px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.2); margin-bottom:4px; }
   .bm-label { font-size:.66rem; font-weight:600; white-space:nowrap; margin-top:4px; color:#4A5568; }
 
-  .rpt-cta { background:linear-gradient(165deg,var(--summer-nights) 0%,var(--babson-green) 50%,#0A3A25 100%); color:#fff; padding:40px 28px; border-radius:16px; text-align:center; margin:8px 0 36px; position:relative; overflow:hidden; opacity:0; transform:translateY(24px); transition:opacity .8s ease, transform .8s ease; }
+  .rpt-cta { background:linear-gradient(165deg,var(--summer-nights) 0%,var(--babson-green) 50%,#0A3A25 100%); color:#fff; padding:40px 28px; border-radius:16px; text-align:center; margin:8px 0 36px; position:relative; overflow:hidden; opacity:0; transform:translateY(24px); transition:opacity .92s ease, transform .92s ease; }
   .rpt-cta.visible { opacity:1; transform:translateY(0); }
   .rpt-cta::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(238,175,0,.15) 0%,transparent 70%); pointer-events:none; }
   .rpt-cta h2 { font-family:'Merriweather',serif; font-size:1.2rem; margin-bottom:8px; position:relative; }
@@ -521,36 +521,36 @@
 const EMAIL_TIMINGS = {
   e1: [
     0,     // "Dear Sarah,"
-    1500,  // Score paragraph (short — 1.5s to read greeting)
-    3000,  // "But your score..." (3s to absorb the score)
-    2500,  // Bullet 1: strengths vs gaps
-    2000,  // Bullet 2: how you compare
-    2000,  // Bullet 3: action plan
-    2000,  // Bullet 4: career ROI
-    3000,  // CTA block (3s to absorb final bullet)
-    2500,  // Footer stat
+    1725,  // Score paragraph
+    3450,  // "But your score..."
+    2875,  // Bullet 1: strengths vs gaps
+    2300,  // Bullet 2: how you compare
+    2300,  // Bullet 3: action plan
+    2300,  // Bullet 4: career ROI
+    3450,  // CTA block
+    2875,  // Footer stat
   ],
   e2: [
     0,     // "Dear Sarah,"
-    1500,  // "I wanted to make sure..."
-    2500,  // Score + gaps paragraph
-    3500,  // "Here's what 2,847..." (longer paragraph to read)
-    2500,  // Social proof intro
-    5000,  // Testimonial (long quote — 5s to read)
-    3000,  // Urgency CTA block
+    1725,  // "I wanted to make sure..."
+    2875,  // Score + gaps paragraph
+    4025,  // "Here's what 2,847..."
+    2875,  // Social proof intro
+    5750,  // Testimonial (long quote)
+    3450,  // Urgency CTA block
   ],
   e3: [
     0,     // "Hi Sarah,"
-    1500,  // Score + hook paragraph
-    4000,  // "Your report breaks..." intro (longer paragraph)
-    2500,  // Category 1
-    2000,  // Category 2
-    2000,  // Category 3
-    2000,  // Category 4
-    2000,  // Category 5
-    2000,  // Category 6
-    3000,  // CTA block (3s to absorb last category)
-    2500,  // Closing paragraphs
+    1725,  // Score + hook paragraph
+    4600,  // "Your report breaks..." intro
+    2875,  // Category 1
+    2300,  // Category 2
+    2300,  // Category 3
+    2300,  // Category 4
+    2300,  // Category 5
+    2300,  // Category 6
+    3450,  // CTA block
+    2875,  // Closing paragraphs
   ],
 };
 
@@ -620,9 +620,9 @@ function animateReport() {
 
   // Phase 1 (0s): Score hero fades in
   const hero = document.getElementById('rpt-hero');
-  setTimeout(() => hero.classList.add('shown'), 300);
+  setTimeout(() => hero.classList.add('shown'), 345);
 
-  // Animated counter — slower tick (45ms) for dramatic effect
+  // Animated counter — slower tick (52ms) for dramatic effect
   const scoreEl = document.getElementById('rpt-score-counter');
   let count = 0;
   const target = 67;
@@ -631,15 +631,15 @@ function animateReport() {
       count++;
       scoreEl.textContent = count + '%';
       if (count >= target) clearInterval(ci);
-    }, 45);
-  }, 800);
+    }, 52);
+  }, 920);
 
-  // Phase 2 (4s): Breakdown card appears with calculating overlay
+  // Phase 2 (4.6s): Breakdown card appears with calculating overlay
   setTimeout(() => {
     document.getElementById('breakdown-card').classList.add('visible');
-  }, 4000);
+  }, 4600);
 
-  // Phase 3 (7.5s): Calculating done → staggered bar reveal (500ms per bar)
+  // Phase 3 (8.6s): Calculating done → staggered bar reveal (575ms per bar)
   setTimeout(() => {
     document.getElementById('calc-overlay').style.display = 'none';
     const barsContainer = document.getElementById('breakdown-bars');
@@ -650,45 +650,45 @@ function animateReport() {
         row.classList.add('revealed');
         const fill = row.querySelector('.bar-fill');
         const w = fill.getAttribute('data-w');
-        setTimeout(() => { fill.style.width = w + '%'; }, 150);
-      }, i * 500);
+        setTimeout(() => { fill.style.width = w + '%'; }, 175);
+      }, i * 575);
     });
-  }, 7500);
+  }, 8600);
 
-  // Phase 4 (12s): Benchmark card (after bars finish: 7.5 + 6*0.5 + 1.5)
+  // Phase 4 (13.8s): Benchmark card
   setTimeout(() => {
     document.getElementById('benchmark-card').classList.add('visible');
     setTimeout(() => {
       document.getElementById('bm-avg').style.left = '58%';
       document.getElementById('bm-you').style.left = '67%';
-    }, 600);
-  }, 12000);
+    }, 690);
+  }, 13800);
 
-  // Phase 5 (16s): Insights card with staggered rows (400ms each)
+  // Phase 5 (18.4s): Insights card with staggered rows (460ms each)
   setTimeout(() => {
     const card = document.getElementById('insights-card');
     card.classList.add('visible');
     const rows = card.querySelectorAll('.insight-row');
     rows.forEach((r, i) => {
-      setTimeout(() => r.classList.add('vis'), 400 + i * 400);
+      setTimeout(() => r.classList.add('vis'), 460 + i * 460);
     });
-  }, 16000);
+  }, 18400);
 
-  // Phase 6 (22s): Tips card with staggered tips (500ms each)
+  // Phase 6 (25.3s): Tips card with staggered tips (575ms each)
   setTimeout(() => {
     const card = document.getElementById('tips-card');
     card.classList.add('visible');
     const tips = card.querySelectorAll('.tip-card');
     tips.forEach((t, i) => {
-      setTimeout(() => t.classList.add('vis'), 400 + i * 500);
+      setTimeout(() => t.classList.add('vis'), 460 + i * 575);
     });
-  }, 22000);
+  }, 25300);
 
-  // Phase 7 (27s): Course CTA
+  // Phase 7 (31s): Course CTA
   setTimeout(() => {
     document.getElementById('rpt-cta').classList.add('visible');
     document.getElementById('rpt-course-cta')?.classList.add('active');
-  }, 27000);
+  }, 31000);
 }
 
 // ── Tab switching ──
