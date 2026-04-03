@@ -3,10 +3,9 @@
 // Columns expected in AI_IQ_Quiz_Leads tab:
 //   A: Timestamp, B: FirstName, C: Email, D: Industry, E: Score%, F: Correct/Total,
 //   G: Time, H-S: Per-question, T: Categories, U: Paid (TRUE/FALSE), V: FollowUp1Sent, W: FollowUp2Sent
-// Env vars: GOOGLE_SERVICE_ACCOUNT_JSON, GMAIL_USER, GMAIL_APP_PASSWORD
+// Env vars: GOOGLE_SERVICE_ACCOUNT_JSON, RESEND_API_KEY
 
 const { createSign } = require('crypto');
-// Uses Resend API instead of nodemailer
 
 const SHEET_ID = '1RHtpqWJMbQPhTTBzF2HU5hzg9SISutY_m40UU_vCleE';
 const SHEET_TAB = 'AI_IQ_Quiz_Leads';
@@ -50,7 +49,7 @@ async function updateCell(token, cell, value) {
   });
 }
 
-// ──── Resend email sender ────
+// ──── Email sender (Resend API) ────
 async function sendViaResend(to, subject, html) {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -65,11 +64,16 @@ async function sendViaResend(to, subject, html) {
       html,
     }),
   });
-  if (!res.ok) throw new Error('Resend failed: ' + await res.text());
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Resend error ${res.status}: ${err}`);
+  }
   return res.json();
 }
 
 async function sendFollowUp(email, type, data) {
+  // Dynamically require the email templates from send-email module
+  // For simplicity, inline the key email content here
   const { firstName, score, industry, cats } = data;
   const siteUrl = process.env.URL || 'https://practical-ai-skills-iq.netlify.app';
   const checkoutUrl = `${siteUrl}/?retarget=1&name=${encodeURIComponent(firstName)}&email=${encodeURIComponent(email)}`;

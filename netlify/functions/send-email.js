@@ -1,10 +1,7 @@
 // Netlify Function: send-email.js
-// Sends personalized emails via Gmail SMTP (salesforlife2@gmail.com)
-// Env vars needed: GMAIL_USER (salesforlife2@gmail.com), GMAIL_APP_PASSWORD
-// Uses nodemailer — add to package.json
-
-// Uses Resend API (free tier: 100 emails/day)
+// Sends personalized emails via Resend API
 // Env vars needed: RESEND_API_KEY
+// No npm packages needed — uses native fetch
 
 // ──── EMAIL TEMPLATES ────
 
@@ -218,7 +215,7 @@ function followUp3Email(data) {
   };
 }
 
-// ──── RESEND SEND FUNCTION ────
+// ──── RESEND SENDER ────
 
 async function sendViaResend(to, subject, html) {
   const res = await fetch('https://api.resend.com/emails', {
@@ -236,7 +233,7 @@ async function sendViaResend(to, subject, html) {
   });
   if (!res.ok) {
     const err = await res.text();
-    throw new Error('Resend failed: ' + err);
+    throw new Error(`Resend error ${res.status}: ${err}`);
   }
   return res.json();
 }
