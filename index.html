@@ -853,6 +853,10 @@ function startQuiz(){
   if(!fn||!em||!ind){alert('Please fill in all fields.');return}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){alert('Please enter a valid email.');return}
   userData={firstName:fn,email:em,industry:ind};quizStartTime=Date.now();currentQ=0;answers=[];
+  // Fire-and-forget: notify Scott via Netlify Form that someone started the quiz
+  fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:new URLSearchParams({'form-name':'quiz-start',site:'Practical AI Skills IQ Quiz (practical-ai-skills-iq.netlify.app)',name:fn,email:em,message:fn+' ('+em+') from '+ind+' just started the Practical AI IQ Quiz'}).toString()
+  }).then(()=>console.log('Start notification sent')).catch(e=>console.warn('Notify failed (non-blocking):',e));
   showSection('quizSection');renderQuestion();
 }
 
@@ -1051,5 +1055,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   kerryObs.observe(kerryEl);
 });
 </script>
+<!-- Hidden Netlify Form for quiz start notifications (detected at deploy time) -->
+<form name="quiz-start" netlify netlify-honeypot="bot-field" hidden>
+  <input name="bot-field"/>
+  <input name="site" type="text"/>
+  <input name="name" type="text"/>
+  <input name="email" type="email"/>
+  <input name="message" type="text"/>
+</form>
 </body>
 </html>
