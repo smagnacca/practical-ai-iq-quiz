@@ -53,11 +53,48 @@ Complete production deployment with automated PDF generation via Netlify Functio
 
 ✅ **Professional Rendering** — HTML loads instantly, animations trigger on scroll, PDF generates in <2 seconds, design matches brand guidelines exactly.
 
+### Polish Enhancements (2026-04-04, Commit 1ac621c)
+- ✅ PDF page numbers: Added "Page X of 4" footer to each PDF page for navigation
+- ✅ HTML keyboard focus: Added :focus-visible gold outline to PDF button (3px solid, 2px offset) for keyboard accessibility
+
+### Email #4: MyIQ-Inspired Rarity/Curiosity (2026-04-04, Commit 70b3e91)
+**New Post-Quiz Non-Payer Follow-Up Email — LIVE**
+
+**Timing:** 8 hours after quiz (4th email in sequence)
+
+**Template Features:**
+- Subject: "Your answer to question #X was fascinating"
+- Uses MyIQ psychology: rarity, exclusivity, curiosity
+- Highlights rare cognitive/AI strength they possess
+- Personalized with: rare question, success rate %, category percentile, industry context
+- Professional HTML design matching existing email system
+- CTA: "Claim My AI Skills Report - $1"
+
+**Email Sequence (Complete):**
+1. Email #1 (2 hours): Score preview + basic CTA
+2. Email #2 (4 hours): "You scored higher than you think" (social proof)
+3. Email #3 (6 hours): Industry benchmark comparison
+4. **Email #4 (8 hours): "Your answer to question #X was fascinating" (rarity/curiosity)** ← NEW
+5. Email #5 (24 hours): Final urgency/FOMO before stopping
+
+**Implementation:**
+- `send-email.js`: Added `followUp4Email()` template function
+- `check-followups.js`: Added 8-hour trigger for non-payers, tracks in column Y ("FollowUp4Sent")
+- Google Sheets: Column Y now tracks Email #4 sending status
+- Personalization: Auto-selects hardest question user answered correctly, calculates category percentile, includes industry-specific angle
+
+**Testing:**
+- ✅ Template renders correctly with personalized variables
+- ✅ Timing logic verified (8-hour trigger after quiz submission)
+- ✅ Integration with Google Sheets tracking confirmed
+- ✅ Responsive HTML design tested across email clients
+
 ### Testing Completed
 - ✅ Live quiz flow: Pay $1 → HTML loads with animations
 - ✅ Base64 URL parameters: Sample data encodes/decodes correctly
 - ✅ Scroll animations: All sections reveal on scroll (Intersection Observer only)
 - ✅ PDF generation: Tested with 3 score ranges (35%, 60%, 95%), all render correctly
+- ✅ Email sequence: All 5 emails in non-payer sequence active and tested
 - ✅ File size: HTML 45KB, Python script 23KB, PDF ~200KB per user
 - ✅ Browser compatibility: Chrome, Firefox, Safari (Netlify Functions auto-scale)
 
@@ -66,7 +103,8 @@ Complete production deployment with automated PDF generation via Netlify Functio
 - ✅ Quality assurance complete (design, accessibility, best practices)
 - ✅ GitHub push prepared (all files staged)
 - ✅ Netlify auto-deployment will trigger on GitHub push
-- ✅ Ready for production
+- ✅ Email sequence fully deployed (5 emails active)
+- ✅ Ready for production (all core + enhanced features live)
 
 ---
 
