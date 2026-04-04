@@ -87,8 +87,10 @@ exports.handler = async (event) => {
       return `${a.isCorrect ? "Correct" : "Incorrect"} (${a.timeTaken}s)`;
     });
 
-    // Category scores: "AI Skills Gap Awareness: 50%"
-    const catScores = (categories || []).map(c => `${c.name}: ${c.pct}%`).join(" | ");
+    // Category scores: "AI Skills Gap Awareness: 50%" — categories is an object {name:{correct,total}}
+    const catScores = categories
+      ? Object.entries(categories).map(([name, d]) => `${name}: ${Math.round(d.correct / d.total * 100)}%`).join(" | ")
+      : "";
 
     const row = [
       timestamp,
