@@ -103,6 +103,13 @@ def decode_quiz_data(base64_str):
 # ─────────────────────────────────────────────────────────────
 # PDF GENERATION
 # ─────────────────────────────────────────────────────────────
+def draw_page_footer(c, page_w, page_h, page_num, total_pages):
+    """Draw page number footer at bottom of page."""
+    margin = 20 * mm
+    c.setFont("Helvetica", 8)
+    c.setFillColor(HexColor('#999999'))
+    c.drawCentredString(page_w / 2, margin - 4 * mm, f"Page {page_num} of {total_pages}")
+
 def generate_pdf(data, output_path):
     """Generate personalized PDF report."""
 
@@ -119,6 +126,8 @@ def generate_pdf(data, output_path):
     c = canvas.Canvas(output_path, pagesize=letter)
     page_w, page_h = letter
     margin = 20 * mm
+    page_num = 1
+    total_pages = 4
 
     # ─────────────────────────────────────────────────────────────
     # PAGE 1: HEADER + SCORE + EXECUTIVE SUMMARY
@@ -182,8 +191,10 @@ def generate_pdf(data, output_path):
     cat_entries = sorted(cats.items())
     for i, (cat_name, cat_data) in enumerate(cat_entries):
         if y < margin + 40 * mm:
+            draw_page_footer(c, page_w, page_h, page_num, total_pages)
             c.showPage()
             y = page_h - margin
+            page_num += 1
 
         correct = cat_data.get('correct', 0)
         total = cat_data.get('total', 5)
@@ -216,7 +227,9 @@ def generate_pdf(data, output_path):
     # ─────────────────────────────────────────────────────────────
     # PAGE 2: BENCHMARK + COURSE + PRICING
     # ─────────────────────────────────────────────────────────────
+    draw_page_footer(c, page_w, page_h, page_num, total_pages)
     c.showPage()
+    page_num += 1
     y = page_h - margin
 
     # Benchmark
@@ -306,7 +319,9 @@ def generate_pdf(data, output_path):
     # ─────────────────────────────────────────────────────────────
     # PAGE 3: DETAILED INSIGHTS
     # ─────────────────────────────────────────────────────────────
+    draw_page_footer(c, page_w, page_h, page_num, total_pages)
     c.showPage()
+    page_num += 1
     y = page_h - margin
 
     c.setFont("Helvetica-Bold", 12)
@@ -318,8 +333,10 @@ def generate_pdf(data, output_path):
 
     for cat_name, cat_data in cat_entries:
         if y < margin + 40 * mm:
+            draw_page_footer(c, page_w, page_h, page_num, total_pages)
             c.showPage()
             y = page_h - margin
+            page_num += 1
 
         correct = cat_data.get('correct', 0)
         total = cat_data.get('total', 5)
@@ -382,7 +399,9 @@ def generate_pdf(data, output_path):
     # ─────────────────────────────────────────────────────────────
     # PAGE 4: NEXT STEPS + FINAL CTA
     # ─────────────────────────────────────────────────────────────
+    draw_page_footer(c, page_w, page_h, page_num, total_pages)
     c.showPage()
+    page_num += 1
     y = page_h - margin
 
     c.setFont("Helvetica-Bold", 12)
@@ -398,8 +417,10 @@ def generate_pdf(data, output_path):
 
     for step_title, step_desc in steps:
         if y < margin + 40 * mm:
+            draw_page_footer(c, page_w, page_h, page_num, total_pages)
             c.showPage()
             y = page_h - margin
+            page_num += 1
 
         c.setFont("Helvetica-Bold", 10)
         c.setFillColor(BABSON_GREEN)
@@ -433,6 +454,9 @@ def generate_pdf(data, output_path):
     c.setFont("Helvetica", 7)
     c.setFillColor(HexColor('#999999'))
     c.drawString(margin, margin, "© 2026 Practical AI Skills IQ. Personalized report generated for educational purposes.")
+
+    # Page footer (final page)
+    draw_page_footer(c, page_w, page_h, page_num, total_pages)
 
     # Save
     c.save()
