@@ -73,3 +73,23 @@
 **Quiz start email notification**
 - Fire-and-forget POST via Netlify Forms when user enters name/email and clicks Start
 - Scott gets instant email alert with visitor details
+
+## v14.8 (2026-04-04)
+**Fix: submit-lead.js categories field type mismatch — leads not writing to Google Sheets**
+- **Bug:** `submit-lead.js` called `.map()` on `categories` treating it as an array, but the quiz frontend sends it as an object `{categoryName: {correct, total}}`. This threw a `TypeError`, was caught silently, and returned 500 — no row ever written to Google Sheets.
+- **Fix:** Replaced `(categories || []).map(c => c.name)` with `Object.entries(categories).map(([name, d]) => ...)` to correctly iterate the object and format as `"Name: XX%"`.
+- **Impact:** All quiz completions since v14 were silently failing to save leads. Google Sheets was empty.
+
+## v14.7 (2026-04-04)
+**Fix: JS syntax error in banner.innerHTML killing all button handlers**
+- **Bug:** The cancelled-payment banner at line 1055 of index.html used `\\'` (double-escaped backslash + quote) inside a single-quoted JS string. In JS, `\\` becomes a literal backslash, then `'` closes the string prematurely — the entire 1,100-line script block failed to parse silently, making every button on the page dead.
+- **Fix:** Changed `\\'[onclick*=handlePayment]\\'` to `\'[onclick*=handlePayment]\'` — one character difference.
+- **Root cause:** Introduced in v14.4 during email template port. Verified clean with `node --check` before pushing.
+- **Diagnosis method:** 3 parallel agents + `node --check` on extracted live script + binary search within script to isolate broken line.
+
+## v14.6 (2026-04-04)
+**Feature: Branded email from-address — hello@salesforlife.ai**
+- Verified all 4 DNS records propagated for salesforlife.ai (DKIM, SPF, DMARC, MX) via `dig`
+- salesforlife.ai verified in Resend dashboard — domain status: active
+- Updated `from` address in `send-email.js` (line 291) and `check-followups.js` (line 61): `onboarding@resend.dev` → `hello@salesforlife.ai`
+- E2E test confirmed: Stripe payment processed, confirmation email received from hello@salesforlife.ai, report page rendered correctly
