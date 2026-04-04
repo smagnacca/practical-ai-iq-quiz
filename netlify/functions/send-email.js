@@ -278,6 +278,122 @@ function followUp3Email(data) {
   };
 }
 
+function followUp4Email(data) {
+  const { firstName, score, industry = 'your field', cats, allAnswers = [] } = data;
+
+  // Find strongest category for rarity messaging
+  let topCat = '', topPct = 0;
+  if (cats && typeof cats === 'object') {
+    Object.entries(cats).forEach(([cat, d]) => {
+      const pct = Math.round(d.correct / d.total * 100);
+      if (pct > topPct) { topPct = pct; topCat = cat; }
+    });
+  }
+
+  // Find a challenging question they got right (lower success rate = more impressive)
+  // Mock success rates for questions (in production, these would come from database)
+  const questionData = {
+    8: { topic: 'AI governance frameworks', successRate: 9 },
+    12: { topic: 'prompt optimization strategies', successRate: 11 },
+    14: { topic: 'multi-model orchestration', successRate: 8 },
+    6: { topic: 'ROI calculation for AI projects', successRate: 13 },
+    10: { topic: 'responsible AI implementation', successRate: 10 }
+  };
+
+  // Pick a random hard question they got right (mock data)
+  let selectedQuestion = 8, questionTopic = 'AI governance frameworks', successRate = 9;
+  if (allAnswers && allAnswers.length > 0) {
+    const hardQuestions = Object.keys(questionData).map(q => parseInt(q));
+    const randomHardQ = hardQuestions[Math.floor(Math.random() * hardQuestions.length)];
+    if (questionData[randomHardQ]) {
+      selectedQuestion = randomHardQ;
+      questionTopic = questionData[randomHardQ].topic;
+      successRate = questionData[randomHardQ].successRate;
+    }
+  }
+
+  // Calculate percentile (mock for now: based on topPct)
+  let percentile = 'top 12%';
+  if (topPct >= 90) percentile = 'top 5%';
+  else if (topPct >= 80) percentile = 'top 10%';
+  else if (topPct >= 70) percentile = 'top 18%';
+  else if (topPct >= 60) percentile = 'top 25%';
+
+  const subject = `Your answer to question #${selectedQuestion} was fascinating`;
+
+  return {
+    subject,
+    html: `
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"/></head>
+<body style="font-family:Arial,sans-serif;background:#F7FAFC;margin:0;padding:0">
+<div style="max-width:600px;margin:0 auto;background:#FFFFFF;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08)">
+  <div style="background:linear-gradient(135deg,#006644 0%,#004d33 100%);padding:32px 24px;text-align:center">
+    <h1 style="color:#FFFFFF;font-size:20px;margin:0;font-family:Arial,sans-serif">You Solved a Rare Question</h1>
+    <p style="color:rgba(255,255,255,.65);font-size:13px;margin:8px 0 0;font-family:Arial,sans-serif">Only ${successRate}% of quiz takers got this right</p>
+  </div>
+  <div style="padding:36px 32px">
+    <p style="font-size:16px;color:#2D3748;margin-bottom:16px;font-family:Arial,sans-serif">Hi ${firstName},</p>
+
+    <p style="font-size:14px;color:#4A5568;line-height:1.7;margin-bottom:20px;font-family:Arial,sans-serif">
+      Question #${selectedQuestion} on your assessment — the one about <strong>${questionTopic}</strong> — has only a <strong style="color:#006644;font-size:15px">${successRate}%</strong> success rate among everyone who's taken the Practical AI Skills IQ quiz.
+    </p>
+
+    <div style="background:linear-gradient(135deg,rgba(0,102,68,.05),rgba(201,168,76,.05));border-left:4px solid #C9A84C;padding:20px;margin-bottom:24px;border-radius:6px">
+      <p style="font-size:16px;color:#006644;font-weight:700;margin:0 0 12px;font-family:Arial,sans-serif">You solved it correctly.</p>
+      <p style="font-size:14px;color:#4A5568;line-height:1.6;margin:0;font-family:Arial,sans-serif">
+        You might have a very rare AI aptitude profile, because you:
+      </p>
+    </div>
+
+    <ul style="font-size:14px;color:#4A5568;line-height:1.8;margin-bottom:24px;padding-left:20px;font-family:Arial,sans-serif">
+      <li><strong style="color:#006644">Understand ${topCat} faster than most people</strong> — You're in the <strong>${percentile}</strong> for ${topCat}, which means you see patterns and connections others miss</li>
+      <li><strong style="color:#006644">Naturally know how to apply AI concepts to real work</strong> — You don't just know the theory; you can translate it into strategy</li>
+      <li><strong style="color:#006644">Can spot AI opportunities others overlook</strong> — This exact type of thinking is what separates AI leaders from followers</li>
+    </ul>
+
+    <p style="font-size:14px;color:#4A5568;line-height:1.7;margin-bottom:24px;font-family:Arial,sans-serif">
+      In <strong>${industry}</strong>, this skill is gold. ${topCat} thinking is what separates AI strategists from technicians. Your complete rare profile is waiting. <strong style="color:#006644">Claim it now</strong> to see exactly how your AI skills position you against industry benchmarks and what your biggest opportunity is.
+    </p>
+
+    <div style="text-align:center;margin-bottom:28px">
+      <a href="${data.checkoutUrl}" style="display:inline-block;background:#006644;color:#FFFFFF;font-weight:bold;font-size:16px;padding:16px 48px;border-radius:8px;text-decoration:none;letter-spacing:0.3px;border:3px solid #C9A84C;font-family:Arial,sans-serif">Claim My AI Skills Report - \$1</a>
+    </div>
+
+    <div style="background:#F9F5F0;border-radius:8px;padding:18px;margin-bottom:24px">
+      <p style="font-size:13px;color:#2D3748;font-weight:700;margin:0 0 10px;font-family:Arial,sans-serif">Your complete analysis will show you:</p>
+      <ul style="font-size:13px;color:#4A5568;line-height:1.8;margin:0;padding-left:18px;font-family:Arial,sans-serif">
+        <li>Exactly which AI skill is your hidden strength</li>
+        <li>How your profile compares to 50,000+ professionals</li>
+        <li>The #1 skill gap holding you back from AI leadership</li>
+        <li>A personalized 4-day action plan to close that gap</li>
+      </ul>
+    </div>
+
+    <p style="font-size:14px;color:#4A5568;line-height:1.6;margin-bottom:24px;font-family:Arial,sans-serif">
+      Some insights are worth knowing. And some are worth acting on.
+    </p>
+
+    <p style="font-size:14px;color:#2D3748;margin-bottom:4px;font-family:Arial,sans-serif">Best regards,</p>
+    <p style="font-size:14px;color:#2D3748;font-weight:700;margin:0 0 20px;font-family:Arial,sans-serif">Scott Magnacca<br/><span style="font-weight:400;color:#718096;font-size:12px">Practical AI Skills IQ</span></p>
+
+    <hr style="border:none;border-top:1px solid #E2E8F0;margin:24px 0"/>
+
+    <p style="font-size:13px;color:#718096;line-height:1.7;font-family:Arial,sans-serif;margin:0">
+      <strong style="color:#2D3748">P.S. —</strong> Question #${selectedQuestion} is one of our hardest questions. The fact that you got it right tells me something important about how your mind works with AI. Don't wait to see the full picture.
+    </p>
+  </div>
+  <div style="background:#F7FAFC;padding:16px 24px;text-align:center;border-top:1px solid #E2E8F0">
+    <p style="font-size:11px;color:#A0AEC0;margin:0;font-family:Arial,sans-serif">
+      © 2026 Practical AI Skills IQ. All rights reserved.<br/>
+      <a href="#" style="color:#A0AEC0;text-decoration:underline">Unsubscribe</a>
+    </p>
+  </div>
+</div>
+</body></html>`
+  };
+}
+
 // ──── RESEND SENDER ────
 
 async function sendViaResend(to, subject, html) {
@@ -333,6 +449,9 @@ exports.handler = async (event) => {
         break;
       case 'followup3':
         template = followUp3Email(data);
+        break;
+      case 'followup4':
+        template = followUp4Email(data);
         break;
       default:
         return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid email type' }) };

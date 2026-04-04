@@ -2,7 +2,8 @@
 // Runs every 30 minutes. Reads Google Sheets for leads that need follow-up emails.
 // Columns expected in AI_IQ_Quiz_Leads tab:
 //   A: Timestamp, B: FirstName, C: Email, D: Industry, E: Score%, F: Correct/Total,
-//   G: Time, H-S: Per-question, T: Categories, U: Paid (TRUE/FALSE), V: FollowUp1Sent, W: FollowUp2Sent
+//   G: Time, H-S: Per-question, T: Categories, U: Paid (TRUE/FALSE), V: FollowUp1Sent, W: FollowUp2Sent, X: FollowUp3Sent, Y: FollowUp4Sent
+// Email schedule: #1 after 2h, #2 after 4h, #3 after 6h, #4 after 8h (all to non-payers only)
 // Env vars: GOOGLE_SERVICE_ACCOUNT_JSON, RESEND_API_KEY
 
 const { createSign } = require('crypto');
@@ -291,6 +292,7 @@ exports.handler = async () => {
       const fu1Sent = (row[21] || '').toUpperCase() === 'TRUE';
       const fu2Sent = (row[22] || '').toUpperCase() === 'TRUE';
       const fu3Sent = (row[23] || '').toUpperCase() === 'TRUE';
+      const fu4Sent = (row[24] || '').toUpperCase() === 'TRUE';
 
       if (!email || paid) continue;
 
@@ -344,6 +346,16 @@ exports.handler = async () => {
           sent++;
           console.log(`Follow-up 3 sent to ${email}`);
         } catch (e) { console.error(`FU3 failed for ${email}:`, e.message); }
+      }
+
+      // Follow-up 4: Send after 8 hours (rarity/curiosity, MyIQ-inspired)
+      if (hoursSince >= 8 && !fu4Sent) {
+        try {
+          await sendFollowUp(email, 'followup4', data);
+          await updateCell(token, `Y${rowNum}`, 'TRUE');
+          sent++;
+          console.log(`Follow-up 4 sent to ${email}`);
+        } catch (e) { console.error(`FU4 failed for ${email}:`, e.message); }
       }
     }
 
