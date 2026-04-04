@@ -207,7 +207,11 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 
   <!-- Download PDF -->
   <div style="text-align:center;margin:20px 0">
-    <button class="btn-pdf" onclick="downloadPDF()">📄 Download PDF Report</button>
+    <button class="btn-pdf" onclick="downloadPDFFromFunction()" id="pdfButton">📄 Download PDF Report</button>
+    <div id="pdfLoadingState" style="display:none;text-align:center;margin:20px 0">
+      <div class="spinner" style="width:30px;height:30px;margin:0 auto 10px"></div>
+      <p style="color:#718096;font-size:.88rem">Creating your personalized report...</p>
+    </div>
   </div>
 
   <!-- 4-Day Course Highlights -->
@@ -402,16 +406,68 @@ function renderReport(data) {
   document.getElementById('loadingState').style.display = 'none';
   document.getElementById('reportContent').style.display = 'block';
 
-  // Trigger reveal animations
-  setTimeout(() => {
-    document.querySelectorAll('.reveal').forEach((el, i) => {
-      setTimeout(() => el.classList.add('visible'), i * 300);
-    });
-  }, 200);
+  // Scroll-triggered reveals are handled by Intersection Observer (initScrollRevealAnimations)
+  // REMOVED batch setTimeout that was overriding scroll triggers (Best Practice #22)
 }
 
-// ──── PDF GENERATION ────
-function downloadPDF() {
+// ──── PDF GENERATION (via Netlify Function) ────
+async function downloadPDFFromFunction() {
+  const data = getReportData();
+  if (!data) {
+    alert('Report data not found. Please refresh the page.');
+    return;
+  }
+
+  // Show loading state
+  document.getElementById('pdfButton').style.display = 'none';
+  document.getElementById('pdfLoadingState').style.display = 'block';
+
+  try {
+    // Encode quiz data as base64
+    const json = JSON.stringify(data);
+    const base64Data = btoa(json);
+
+    // Call Netlify Function
+    const response = await fetch('/.netlify/functions/generate-pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: base64Data })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}`);
+    }
+
+    // Get PDF blob
+    const blob = await response.blob();
+
+    // Create download link
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `AI_Skills_IQ_Report_${data.firstName}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    // Hide loading, show button again
+    document.getElementById('pdfLoadingState').style.display = 'none';
+    document.getElementById('pdfButton').style.display = 'inline-flex';
+
+  } catch (error) {
+    console.error('PDF download failed:', error);
+    alert('Failed to generate PDF. Please try again.');
+
+    // Hide loading, show button again
+    document.getElementById('pdfLoadingState').style.display = 'none';
+    document.getElementById('pdfButton').style.display = 'inline-flex';
+  }
+}
+
+// ──── LEGACY: PDF GENERATION (jsPDF - kept for reference) ----
+// This older version was replaced by ReportLab-based Netlify Function
+function downloadPDFLegacy() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const data = getReportData();
