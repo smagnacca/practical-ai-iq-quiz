@@ -394,6 +394,87 @@ function followUp4Email(data) {
   };
 }
 
+function followUp5Email(data) {
+  const { firstName, score = 0, industry = 'your field', cats } = data;
+
+  // Determine score tier for personalized urgency framing
+  const tier = score >= 75 ? 'high' : score >= 50 ? 'mid' : 'low';
+  const tierHeadline = tier === 'high'
+    ? `You're in the top tier — don't let this expire`
+    : tier === 'mid'
+    ? `Your score puts you ahead of most — claim the full picture`
+    : `Your AI gap is fixable — but only if you know where to start`;
+
+  const tierMessage = tier === 'high'
+    ? `You scored in the top percentile for practical AI skills. That means you have a real, measurable edge — but only if you know how to deploy it. Your personalized report maps exactly how to use that edge to get ahead in ${industry}.`
+    : tier === 'mid'
+    ? `You scored above average for your field. But "above average" won't be enough in 18 months — not when AI fluency becomes table stakes. Your personalized report shows you which specific skills to develop now, before the gap closes.`
+    : `You already know AI is reshaping ${industry}. Your score reveals exactly which skills are holding you back — and which ones to develop first. That clarity is worth more than another week of guessing.`;
+
+  const subject = `Last chance: Your AI Skills IQ report expires at midnight`;
+
+  return {
+    subject,
+    html: `
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"/></head>
+<body style="font-family:Arial,sans-serif;background:#F7FAFC;margin:0;padding:0">
+<div style="max-width:600px;margin:0 auto;background:#FFFFFF;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08)">
+  <div style="background:linear-gradient(135deg,#1B4332 0%,#006644 100%);padding:32px 24px;text-align:center">
+    <p style="color:rgba(255,255,255,.6);font-size:12px;margin:0 0 8px;font-family:Arial,sans-serif;letter-spacing:1px;text-transform:uppercase">Final Notice</p>
+    <h1 style="color:#EEAF00;font-size:22px;margin:0;font-family:Arial,sans-serif">${tierHeadline}</h1>
+    <p style="color:rgba(255,255,255,.65);font-size:13px;margin:10px 0 0;font-family:Arial,sans-serif">Your $1 access window closes tonight at midnight</p>
+  </div>
+  <div style="padding:36px 32px">
+    <p style="font-size:16px;color:#2D3748;margin-bottom:16px;font-family:Arial,sans-serif">Hi ${firstName},</p>
+
+    <p style="font-size:14px;color:#4A5568;line-height:1.7;margin-bottom:20px;font-family:Arial,sans-serif">
+      This is my final email about your Practical AI Skills IQ results.
+    </p>
+
+    <p style="font-size:14px;color:#4A5568;line-height:1.7;margin-bottom:20px;font-family:Arial,sans-serif">
+      ${tierMessage}
+    </p>
+
+    <div style="background:linear-gradient(135deg,rgba(27,67,50,.05),rgba(238,175,0,.05));border:2px solid #C9A84C;border-radius:10px;padding:24px;margin-bottom:28px;text-align:center">
+      <p style="font-size:13px;color:#718096;text-decoration:line-through;margin:0 0 4px;font-family:Arial,sans-serif">Regular price: $9.99</p>
+      <p style="font-size:28px;color:#006644;font-weight:700;margin:0 0 4px;font-family:Arial,sans-serif">$1.00 <span style="font-size:14px;color:#718096;font-weight:400">— 90% off, tonight only</span></p>
+      <p style="font-size:12px;color:#C0392B;font-weight:700;margin:0;font-family:Arial,sans-serif;text-transform:uppercase;letter-spacing:.5px">⏰ Expires midnight tonight</p>
+    </div>
+
+    <div style="background:#F9F5F0;border-radius:8px;padding:20px;margin-bottom:28px">
+      <p style="font-size:13px;color:#2D3748;font-weight:700;margin:0 0 12px;font-family:Arial,sans-serif">Your personalized report includes:</p>
+      <table style="width:100%;font-size:13px;color:#4A5568;font-family:Arial,sans-serif">
+        <tr><td style="padding:4px 0">✅</td><td style="padding:4px 0 4px 8px">Complete breakdown of all 6 AI skill categories</td></tr>
+        <tr><td style="padding:4px 0">✅</td><td style="padding:4px 0 4px 8px">Your exact percentile vs. 12,000+ professionals in ${industry}</td></tr>
+        <tr><td style="padding:4px 0">✅</td><td style="padding:4px 0 4px 8px">The #1 skill gap holding you back from AI leadership</td></tr>
+        <tr><td style="padding:4px 0">✅</td><td style="padding:4px 0 4px 8px">Personalized 4-day action plan to close that gap</td></tr>
+        <tr><td style="padding:4px 0">✅</td><td style="padding:4px 0 4px 8px">Downloadable PDF you keep forever</td></tr>
+      </table>
+    </div>
+
+    <div style="text-align:center;margin-bottom:24px">
+      <a href="${data.checkoutUrl}" style="display:inline-block;background:#EEAF00;color:#FFFFFF;font-weight:bold;font-size:17px;padding:18px 52px;border-radius:8px;text-decoration:none;letter-spacing:0.3px;font-family:Arial,sans-serif">Get My Report for $1 →</a>
+      <p style="font-size:12px;color:#A0AEC0;margin:10px 0 0;font-family:Arial,sans-serif">Secure checkout · Instant access · 30-day money-back guarantee</p>
+    </div>
+
+    <p style="font-size:13px;color:#718096;line-height:1.6;margin-bottom:16px;font-family:Arial,sans-serif">
+      After midnight, the $1 offer ends and your results expire from our system. We won't email you again.
+    </p>
+
+    <p style="font-size:14px;color:#2D3748;margin-bottom:4px;font-family:Arial,sans-serif">Scott Magnacca<br/><span style="font-weight:400;color:#718096;font-size:12px">Practical AI Skills IQ</span></p>
+  </div>
+  <div style="background:#F7FAFC;padding:16px 24px;text-align:center;border-top:1px solid #E2E8F0">
+    <p style="font-size:11px;color:#A0AEC0;margin:0;font-family:Arial,sans-serif">
+      © 2026 Practical AI Skills IQ. All rights reserved.<br/>
+      <a href="#" style="color:#A0AEC0;text-decoration:underline">Unsubscribe</a>
+    </p>
+  </div>
+</div>
+</body></html>`
+  };
+}
+
 // ──── RESEND SENDER ────
 
 async function sendViaResend(to, subject, html) {
@@ -452,6 +533,9 @@ exports.handler = async (event) => {
         break;
       case 'followup4':
         template = followUp4Email(data);
+        break;
+      case 'followup5':
+        template = followUp5Email(data);
         break;
       default:
         return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid email type' }) };

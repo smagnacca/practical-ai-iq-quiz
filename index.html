@@ -1179,7 +1179,7 @@ const QUESTIONS=[
 ],correct:0}
 ];
 
-let currentQ=0,answers=[],timer=null,timeLeft=20,userData={},quizStartTime=null,countdownInterval=null,countdownSeconds=90,exitIntentShown=false;
+let currentQ=0,answers=[],timer=null,timeLeft=60,userData={},quizStartTime=null,countdownInterval=null,countdownSeconds=90,exitIntentShown=false;
 
 // ──── LIVE FEED ROTATION ────
 const LIVE_DATA=[
@@ -1212,7 +1212,7 @@ function showSection(id){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   const el=document.getElementById(id);if(el)el.classList.add('active');
   if(id!=='heroSection'){document.getElementById('heroSection').style.display='none'}
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({top:0,behavior:'instant'});
   if(id==='gateSection')runGateEntrance();
 }
 

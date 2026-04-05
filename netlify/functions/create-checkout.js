@@ -44,7 +44,7 @@ exports.handler = async (event) => {
         quantity: 1,
       }],
       mode: 'payment',
-      success_url: `${siteUrl}/report.html?data=${reportPayload}&paid=1`,
+      success_url: `${siteUrl}/enhanced-report.html?data=${reportPayload}&paid=1`,
       cancel_url: `${siteUrl}/?cancelled=1`,
       metadata: {
         firstName,

@@ -1,59 +1,38 @@
 # Changelog — Practical AI Skills IQ Quiz
 
-## v15.6 — How It Works: Scroll-Triggered Stagger Animation + Animated Arrows (2026-04-05)
+## v15.4 — E2E Audit Bug Fixes (2026-04-05)
 
 ### Summary
-Replaced CSS-delay-based card entrance (fired on page load) with IntersectionObserver scroll-triggered stagger. Step 1 → Arrow → Step 2 → Arrow → Step 3 builds in sequence only when the section scrolls into view. Arrows hidden on mobile.
+Full E2E audit completed. 5 bugs found and fixed. All 5 confirmed resolved via grep verification before deployment.
+
+### Bugs Fixed
+
+**P0 — Email #5 (24h FOMO) was missing from check-followups.js**
+- `check-followups.js`: Added `fu5Sent` tracking (column Z, row[25]), added `hoursSince >= 24 && !fu5Sent` trigger block sending `followup5` type
+- `send-email.js`: Added `followUp5Email()` function and `case 'followup5'` to switch — "Last chance: Your AI Skills IQ report expires at midnight" with score-tier-personalized body (high/mid/low), price callout, feature checklist, gold CTA
+- Column Z now tracks Email #5 sent status in Google Sheets schema (comment updated)
+- Email schedule now complete: 2h, 4h, 6h, 8h, **24h ✅**
+
+**P0 — Stripe redirected to wrong report file**
+- `create-checkout.js` line 47: `success_url` was pointing to `/report.html` (old jsPDF version)
+- Fixed to `/enhanced-report.html` — the v15.3 report with Netlify Function PDF generation, Intersection Observer scroll reveals, and all animations
+- Paying customers now receive the correct, production-grade report
+
+**P1 — showSection() smooth scroll caused blank-screen flash**
+- `index.html`: `window.scrollTo({top:0,behavior:'smooth'})` → `behavior:'instant'`
+- Users scrolling down the homepage and clicking "Start Free Assessment" no longer see a ~500ms blank cream void before the gate appears
+
+**P2 — timeLeft initialized to 20 (dead code) instead of 60**
+- `index.html`: `let timeLeft=20` → `let timeLeft=60` to match the 60s timer used on every question render
+- Eliminates potential race condition if renderQuestion order ever changes
 
 ### Files Changed
 | File | Change |
 |------|--------|
-| `index.html` | `.how-card` CSS updated, arrow CSS added, HTML updated with IDs + arrow SVGs, stagger JS injected |
-
-### Changes
-- **Cards start hidden** — `opacity:0; transform:translateY(28px)` by default; `.card-visible` class reveals them
-- **IntersectionObserver trigger** — fires when Step 1 card reaches 20% viewport; `howAnimated` flag prevents re-firing
-- **Stagger sequence** — Step 1 (0ms) → Arrow 1 (1800ms) → Step 2 (2200ms) → Arrow 2 (3800ms) → Step 3 (4200ms); each card transitions over 2s
-- **Animated arrows** — green circle SVG with right-pointing chevron; positioned absolutely between cards; `arrow-visible` class fades them in; `display:none` on mobile breakpoint
-- **Removed** — CSS `animation-delay` approach that fired immediately on page load regardless of scroll position
-
----
-
-## v15.5 — Trust Bar Redesign: Gold-Bordered Card + Typewriter Headline (2026-04-05)
-
-### Summary
-Redesigned the authority/trust bar section on the homepage into a contained gold-bordered card with a scroll-triggered typewriter headline. Only this section was modified — no other homepage changes applied.
-
-### Files Changed
-| File | Change |
-|------|--------|
-| `index.html` | Trust bar CSS replaced, HTML restructured with wrapper + headline, typewriter JS injected |
-
-### Changes
-- **Gold-bordered card** — `.trust-bar-outer` wrapper + `.trust-bar` with `border: 1.5px solid rgba(201,168,76,.45)`, `border-radius: 12px`, and a soft gold box-shadow to visually separate this section from the quote above
-- **Eyebrow label** — "THE AI SKILLS GAP IS NOT A THEORY" in peacock blue uppercase above the headline
-- **Typewriter headline** — "The world's most respected research institutions agree: AI fluency is now the defining career divide." types out in Merriweather serif at 38ms/char, triggered by IntersectionObserver when section scrolls into view (threshold 0.4)
-- **Sub-line fade** — "The statistics powering this assessment are drawn from their research — not opinion." fades in after typewriter completes
-- **Marquee refinements** — speed adjusted to 22s, item text darkened to `#444` at 70% opacity, gold dot separators between publications
-- **Scroll animation** — `.trust-bar-outer` inherits `fadeUp` animation for section entrance
-
----
-
-## v15.4 — Bell Curve Chart Enhancement (2026-04-05)
-
-### Summary
-Enhanced the homepage hero bell curve chart with animated X/Y axes, a smooth 3-second curve build animation, and enlarged stat badges lifted off the curve for readability. No other homepage elements were modified.
-
-### Files Changed
-| File | Change |
-|------|--------|
-| `index.html` | Bell curve SVG replaced with enhanced version + JS animation block injected |
-
-### Changes
-- **X and Y axes added** — both axes draw in sequentially (200–850ms) with white tick marks, axis labels (30/50/70/90/100 on X; 0%/10%/20%/30% on Y), and rotated Y-axis title "% of Test-Takers"
-- **Bell curve animates over 3 seconds** — JS-driven `stroke-dashoffset` animation using real `getTotalLength()` measurement; smooth cubic easing; starts at 900ms after axes appear; gold fill area fades in on completion
-- **Stat labels 25% larger and moved off the curve** — all 5 percentages (8%, 21%, 38%, 21%, 8%) now rendered as frosted dark badge boxes with gold borders, leader lines back to the curve, and pop-in animation sequenced after the curve finishes (4.1s–5.1s)
-- **Animation engine** — JS `requestAnimationFrame` used for all `<g>` element animations (CSS `@keyframes` on SVG groups silently fail; this approach is reliable cross-browser)
+| `netlify/functions/check-followups.js` | Added fu5Sent tracking + hoursSince >= 24 trigger block |
+| `netlify/functions/send-email.js` | Added followUp5Email() function + case 'followup5' in switch |
+| `netlify/functions/create-checkout.js` | success_url: report.html → enhanced-report.html |
+| `index.html` | behavior:'smooth' → 'instant'; timeLeft=20 → timeLeft=60 |
 
 ---
 
@@ -162,6 +141,24 @@ Complete production deployment with automated PDF generation via Netlify Functio
 - ✅ Netlify auto-deployment will trigger on GitHub push
 - ✅ Email sequence fully deployed (5 emails active)
 - ✅ Ready for production (all core + enhanced features live)
+
+---
+
+## Daily Health Check — Automated (2026-04-05)
+
+**Type:** Scheduled automated task (no user present)
+**Status:** ✅ All systems healthy — no changes made
+
+- Live site verified: https://practical-ai-skills-iq.netlify.app loading correctly
+- All 6 Netlify Functions confirmed deployed
+- Latest GitHub commit: `1d11357` (2026-04-04) — no new code changes
+- Full 5-email sequence active
+- PDF generation pipeline active
+- No regressions detected
+
+**Blocker noted:** GitHub PAT not persisted to disk in this session — auto-push not possible. Scott needs to provide PAT once to re-enable automated pushes.
+
+**Next priorities:** E2E Test #1 (payer flow) and Test #2 (non-payer email sequence) — required before customer launch.
 
 ---
 
