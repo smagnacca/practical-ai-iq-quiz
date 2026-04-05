@@ -1,5 +1,19 @@
 # Changelog — Practical AI Skills IQ Quiz
 
+## v16.9 — Lakhani Quote: Harvard Crimson colour + narrower + lower (2026-04-05)
+
+### Summary
+Two visual polish tweaks to the Lakhani quote box inside the green gate panel: background updated to Harvard Crimson tone, box made narrower and pushed down to better occupy the lower green space.
+
+### Changes
+- Background: `rgba(90,0,0,.72)` → `rgba(165,28,48,.82)` (Harvard Crimson `#A51C30` at 82% opacity) — lighter, more readable, true crimson tone
+- Border opacity lifted from 10% → 15% white for slightly more definition
+- Width: `100%` → `82%`, centred with `align-self:center`
+- Top margin: `18px` → `28px` — pushes box further down into the green space
+- Commits: 3df4097 (crimson), 05bde2a (width/margin)
+
+---
+
 ## v16.8 — Lakhani Quote Moved Inside Green Gate Panel (2026-04-05)
 
 ### Summary
