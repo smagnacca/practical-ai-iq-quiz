@@ -119,7 +119,7 @@ a{color:inherit;text-decoration:none}
 .exit-close:hover{border-color:var(--text-soft);color:var(--text)}
 
 /* ═══ TRUST BAR ═══ */
-.trust-bar-outer{background:var(--white);padding:32px 24px 28px;opacity:0;animation:fadeUp 1.2s ease forwards}
+.trust-bar-outer{background:var(--white);padding:32px 24px 28px;opacity:1}
 .trust-bar{background:var(--white);border:1.5px solid rgba(201,168,76,.45);border-radius:12px;padding:28px 0 16px;overflow:hidden;box-shadow:0 2px 24px rgba(201,168,76,.08),inset 0 0 40px rgba(201,168,76,.03)}
 .trust-bar-headline{text-align:center;padding:0 32px 20px;border-bottom:1px solid rgba(201,168,76,.18);margin-bottom:14px}
 .trust-bar-eyebrow{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--peacock);display:block;margin-bottom:10px}
@@ -129,6 +129,20 @@ a{color:inherit;text-decoration:none}
 .trust-item{color:#444;font-size:.74rem;font-weight:700;letter-spacing:.09em;opacity:.7;padding:0 28px;white-space:nowrap}
 .trust-item::before{content:'·';margin-right:28px;opacity:.4;color:rgba(201,168,76,.8)}
 .trust-item:first-child::before{display:none}
+
+/* ═══ JOURNEY PREVIEW (before/after on green) ═══ */
+.journey-preview{padding:52px 28px 40px;max-width:900px;margin:0 auto;text-align:center}
+.journey-preview-title{font-family:'Merriweather',serif;font-size:1.75rem;font-weight:700;color:#fff;margin-bottom:8px}
+.journey-preview-sub{color:rgba(255,255,255,.72);font-size:.95rem;margin-bottom:32px}
+.journey-stats-row{display:flex;gap:40px;justify-content:center;margin-bottom:32px}
+.journey-stat-num{font-family:'Merriweather',serif;font-size:2.4rem;font-weight:700;color:var(--bright-gold);line-height:1}
+.journey-stat-label{font-size:.78rem;color:rgba(255,255,255,.65);margin-top:4px;line-height:1.4}
+.journey-sketches{display:flex;gap:24px;justify-content:center;max-width:480px;margin:0 auto}
+.journey-sketch-box{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px;display:flex;flex-direction:column;align-items:center}
+.journey-sketch-box svg{width:100%;max-width:170px}
+.journey-sketch-label{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--bright-gold);margin-top:6px}
+.journey-source{font-size:.6rem;color:rgba(255,255,255,.35);margin-top:20px;line-height:1.5}
+@media(max-width:500px){.journey-stats-row{gap:24px}.journey-stat-num{font-size:1.9rem}}
 
 /* ═══ HOW IT WORKS ═══ */
 .how-section{padding:72px 20px 0;max-width:960px;margin:0 auto}
@@ -771,6 +785,68 @@ a{color:inherit;text-decoration:none}
       </div>
     </div>
   </div>
+</div>
+
+<!-- Journey Preview: before/after graphic + stats, visible immediately below hero on green bg -->
+<div class="journey-preview">
+  <h3 class="journey-preview-title">Your AI Skills Journey Starts Here</h3>
+  <p class="journey-preview-sub">Join 12,000+ professionals who've discovered their AI readiness score</p>
+  <div class="journey-stats-row">
+    <div>
+      <div class="journey-stat-num" id="jStat1">56%</div>
+      <div class="journey-stat-label">Wage premium<br/>for AI-skilled pros</div>
+    </div>
+    <div>
+      <div class="journey-stat-num" id="jStat2">77%</div>
+      <div class="journey-stat-label">Employers expect<br/>AI-ready hires</div>
+    </div>
+  </div>
+  <div class="journey-sketches">
+    <div class="journey-sketch-box">
+      <svg viewBox="0 0 180 200" xmlns="http://www.w3.org/2000/svg">
+        <path class="sketch-line" d="M20,155 Q25,153 90,155 Q155,157 160,155" stroke="rgba(255,255,255,.5)" fill="none" stroke-width="1.8" stroke-linecap="round" style="animation-delay:.2s"/>
+        <rect x="55" y="128" width="42" height="28" rx="2" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.2" class="sketch-line" style="animation-delay:.4s"/>
+        <line x1="62" y1="136" x2="88" y2="136" stroke="rgba(255,255,255,.35)" stroke-width="1" class="sketch-line" style="animation-delay:.6s"/>
+        <line x1="62" y1="141" x2="85" y2="141" stroke="rgba(255,255,255,.35)" stroke-width="1" class="sketch-line" style="animation-delay:.7s"/>
+        <line x1="62" y1="146" x2="80" y2="146" stroke="rgba(255,255,255,.35)" stroke-width="1" class="sketch-line" style="animation-delay:.8s"/>
+        <line x1="100" y1="138" x2="108" y2="125" stroke="var(--bright-gold)" stroke-width="2" stroke-linecap="round" class="sketch-line" style="animation-delay:.9s"/>
+        <path class="sketch-line" d="M76,125 Q76,100 76,95" stroke="rgba(255,255,255,.7)" fill="none" stroke-width="2" stroke-linecap="round" style="animation-delay:.3s"/>
+        <path class="sketch-line" d="M55,110 Q66,102 76,100 Q86,102 97,110" stroke="rgba(255,255,255,.6)" fill="none" stroke-width="1.8" stroke-linecap="round" style="animation-delay:.5s"/>
+        <circle cx="76" cy="72" r="18" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.8" class="sketch-line" style="animation-delay:.1s"/>
+        <path d="M69,70 Q72,67 75,70" stroke="rgba(255,255,255,.5)" fill="none" stroke-width="1" stroke-linecap="round"/>
+        <path d="M79,70 Q82,67 85,70" stroke="rgba(255,255,255,.5)" fill="none" stroke-width="1" stroke-linecap="round"/>
+        <path d="M72,80 Q76,78 80,80" stroke="rgba(255,255,255,.45)" fill="none" stroke-width="1" stroke-linecap="round"/>
+        <text x="115" y="60" fill="var(--bright-gold)" font-size="16" font-weight="700" opacity=".7">?</text>
+        <text x="40" y="50" fill="var(--bright-gold)" font-size="12" font-weight="700" opacity=".5">?</text>
+      </svg>
+      <div class="journey-sketch-label">Before</div>
+    </div>
+    <div class="journey-sketch-box">
+      <svg viewBox="0 0 180 200" xmlns="http://www.w3.org/2000/svg">
+        <path class="sketch-line" d="M90,125 Q90,100 90,95" stroke="rgba(255,255,255,.7)" fill="none" stroke-width="2" stroke-linecap="round" style="animation-delay:.3s"/>
+        <path class="sketch-line" d="M65,105 Q78,97 90,95 Q102,97 115,105" stroke="rgba(255,255,255,.6)" fill="none" stroke-width="1.8" stroke-linecap="round" style="animation-delay:.5s"/>
+        <path class="sketch-line" d="M68,105 Q55,85 48,55" stroke="rgba(255,255,255,.6)" fill="none" stroke-width="2" stroke-linecap="round" style="animation-delay:.7s"/>
+        <path class="sketch-line" d="M112,105 Q125,85 132,55" stroke="rgba(255,255,255,.6)" fill="none" stroke-width="2" stroke-linecap="round" style="animation-delay:.7s"/>
+        <circle cx="46" cy="52" r="5" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
+        <circle cx="134" cy="52" r="5" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
+        <circle cx="90" cy="72" r="18" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.8" class="sketch-line" style="animation-delay:.1s"/>
+        <circle cx="82" cy="70" r="2" fill="rgba(255,255,255,.6)"/>
+        <circle cx="98" cy="70" r="2" fill="rgba(255,255,255,.6)"/>
+        <path d="M80,78 Q90,88 100,78" stroke="rgba(255,255,255,.6)" fill="none" stroke-width="1.5" stroke-linecap="round"/>
+        <rect x="58" y="128" width="64" height="40" rx="3" fill="rgba(255,255,255,.1)" stroke="var(--bright-gold)" stroke-width="1.5"/>
+        <text x="90" y="145" text-anchor="middle" fill="var(--bright-gold)" font-size="11" font-weight="700" font-family="Merriweather,serif">AI SKILLS IQ</text>
+        <text x="90" y="162" text-anchor="middle" fill="var(--white)" font-size="16" font-weight="700" font-family="Merriweather,serif">92%</text>
+        <text x="30" y="40" fill="var(--bright-gold)" font-size="14">✨</text>
+        <text x="145" y="35" fill="var(--bright-gold)" font-size="16">⭐</text>
+        <text x="60" y="30" fill="var(--bright-gold)" font-size="10">💰</text>
+        <text x="120" y="25" fill="var(--bright-gold)" font-size="11">📈</text>
+        <path class="sketch-line" d="M155,170 L155,105" stroke="var(--bright-gold)" stroke-width="2" stroke-linecap="round" style="animation-delay:1.4s"/>
+        <path class="sketch-line" d="M148,115 L155,105 L162,115" stroke="var(--bright-gold)" stroke-width="2" stroke-linecap="round" fill="none" style="animation-delay:1.6s"/>
+      </svg>
+      <div class="journey-sketch-label">After</div>
+    </div>
+  </div>
+  <div class="journey-source">Sources: PwC Global AI Jobs Barometer 2025; CarringtonCrisp See the Future 2026 (1,863 respondents, 40 countries)</div>
 </div>
 
 <!-- Inspirational Quote — Hero -->
