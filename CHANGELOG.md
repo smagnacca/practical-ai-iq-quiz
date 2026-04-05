@@ -1,32 +1,5 @@
 # Changelog — Practical AI Skills IQ Quiz
 
-## v17.0 — Responsive Sidebar Quiz Layout + 5-Minute Results Countdown (2026-04-05)
-
-### Summary
-Two UX improvements: (1) Quiz inspirational messages and contextual facts are now surfaced in visible sidebars flanking the quiz card rather than above it where users miss them. (2) Results page offer countdown extended from 90 seconds to 5 minutes, giving users adequate time to read, digest, and decide.
-
-### Changes — Sidebar Layout
-- Added `.quiz-outer` 3-column CSS grid: `210px` fact sidebar | quiz card | `210px` motivation sidebar
-- **Desktop (≥1100px):** sticky left sidebar shows research stats/quotes keyed to each question; right sidebar shows personalised motivational message + score progress
-- **Tablet (768–1099px):** both sidebars render as a side-by-side row above the quiz card (2-column grid, full width of container)
-- **Mobile (<768px):** sidebars hidden; existing `#motivationArea` compact banner retained with upgraded icon + emoji prefix
-- New `showSidebars()` function replaces `showMotivation()` — populates all three zones simultaneously
-- 12 left-sidebar data entries (research insights, cited stats) and 12 right-sidebar entries (motivational, score-aware) — all question-indexed
-- Sidebar cards animate in with `sb-visible` class: `opacity 0→1`, `translateY 12→0`, staggered 80ms / 180ms left vs right
-- `#motivationArea` hidden via CSS on ≥768px, shown on <768px
-
-### Changes — Results Countdown
-- `countdownSeconds` initialised from `90` → `300` (5 minutes)
-- `startCountdown()` reset from `90` → `300`
-- Initial display: `1:30` → `5:00`
-- Urgent threshold: `<=20s` → `<=60s` (turns red in last minute, not last 20 seconds)
-
-### Quality
-- All 5 inline JS blocks pass `node --check` syntax validation
-- No layout changes to results page, gate section, or hero section
-
----
-
 ## v16.9 — Lakhani Quote: Harvard Crimson colour + narrower + lower (2026-04-05)
 
 ### Summary
