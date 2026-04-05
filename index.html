@@ -1240,6 +1240,22 @@ a{color:inherit;text-decoration:none}
       <div id="ctaBlock" style="display:none">
         <div class="cta-block"><div class="cta-text"><strong>Ready to stand out?</strong><br/>Professionals who close their AI skill gaps see measurable improvements in productivity and earnings within 90 days.</div><a href="https://4daycourse.netlify.app" target="_blank" class="btn-cta">Learn More →</a></div>
       </div>
+
+      <!-- REFERRAL: Send a Friend callout -->
+      <div id="referralBlock" style="display:none;margin-top:32px">
+        <div style="background:linear-gradient(135deg,rgba(0,66,44,.06),rgba(201,168,76,.07));border:1.5px solid rgba(201,168,76,.35);border-radius:14px;padding:28px 32px;text-align:center;max-width:560px;margin:0 auto">
+          <div style="font-size:1.5rem;margin-bottom:8px">&#128101;</div>
+          <h3 style="font-size:1.05rem;font-weight:700;color:var(--babson-green);margin:0 0 6px">Know someone who should take this?</h3>
+          <p style="font-size:.85rem;color:var(--text-soft);line-height:1.6;margin:0 0 20px">Send a friend their own personalized AI skills quiz &mdash; takes 8 minutes, free instant results.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:12px">
+            <input id="refFriendName" type="text" placeholder="Friend's first name" style="flex:1;min-width:140px;max-width:200px;padding:10px 14px;border:1.5px solid rgba(0,102,68,.25);border-radius:8px;font-size:.88rem;outline:none;background:#fff;color:#2D3748" />
+            <input id="refFriendEmail" type="email" placeholder="Friend's email address" style="flex:1;min-width:200px;max-width:260px;padding:10px 14px;border:1.5px solid rgba(0,102,68,.25);border-radius:8px;font-size:.88rem;outline:none;background:#fff;color:#2D3748" />
+          </div>
+          <button id="refSendBtn" onclick="sendReferral()" style="background:linear-gradient(135deg,#006644,#004d33);color:#fff;border:none;padding:11px 28px;border-radius:8px;font-size:.92rem;font-weight:700;cursor:pointer;letter-spacing:.3px;transition:opacity .2s">Send Invite &#8594;</button>
+          <div id="refStatus" style="margin-top:12px;font-size:.82rem;min-height:18px"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -1765,7 +1781,54 @@ function skipPayment(){
   // The scheduled function (check-followups) will pick this up and send emails at 2hr/4hr
   console.log('Payment skipped — follow-up emails will be sent automatically via scheduled function');
 }
-function showCourseCTA(){document.getElementById('courseBlock').style.display='block';document.getElementById('courseBlock').scrollIntoView({behavior:'smooth'})}
+function showCourseCTA(){
+  document.getElementById('courseBlock').style.display='block';
+  // Also show ctaBlock and referral callout
+  document.getElementById('ctaBlock').style.display='block';
+  var rb=document.getElementById('referralBlock');
+  if(rb){rb.style.display='block';}
+  document.getElementById('courseBlock').scrollIntoView({behavior:'smooth'});
+}
+
+function sendReferral(){
+  var friendName=(document.getElementById('refFriendName').value||'').trim();
+  var friendEmail=(document.getElementById('refFriendEmail').value||'').trim();
+  var statusEl=document.getElementById('refStatus');
+  var btn=document.getElementById('refSendBtn');
+  if(!friendName){statusEl.style.color='#e53e3e';statusEl.textContent="Please enter your friend's name.";return;}
+  if(!friendEmail||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(friendEmail)){statusEl.style.color='#e53e3e';statusEl.textContent='Please enter a valid email address.';return;}
+  btn.disabled=true;btn.textContent='Sending...';btn.style.opacity='.65';
+  statusEl.style.color='#718096';statusEl.textContent='';
+  var payload={
+    referrerName:userData.firstName||'',
+    referrerEmail:userData.email||'',
+    referrerScore:userData.score||'',
+    friendName:friendName,
+    friendEmail:friendEmail
+  };
+  fetch('/.netlify/functions/send-referral',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if(data.success){
+      btn.textContent='Sent! \u2713';btn.style.background='linear-gradient(135deg,#276749,#1a4731)';
+      statusEl.style.color='#276749';
+      statusEl.textContent='Invite sent to '+friendEmail+'. Thanks for sharing!';
+      document.getElementById('refFriendName').value='';
+      document.getElementById('refFriendEmail').value='';
+    } else {
+      btn.disabled=false;btn.textContent='Send Invite \u2192';btn.style.opacity='1';
+      statusEl.style.color='#e53e3e';statusEl.textContent='Something went wrong. Please try again.';
+    }
+  })
+  .catch(function(){
+    btn.disabled=false;btn.textContent='Send Invite \u2192';btn.style.opacity='1';
+    statusEl.style.color='#e53e3e';statusEl.textContent='Network error. Please try again.';
+  });
+}
 
 function handleExitSubmit(){
   const name=document.getElementById('exitName').value.trim(),email=document.getElementById('exitEmail').value.trim();
