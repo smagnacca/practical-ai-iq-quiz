@@ -1,5 +1,33 @@
 # Changelog — Practical AI Skills IQ Quiz
 
+## v16.7 — Send-a-Friend Referral Feature (2026-04-05)
+
+### Summary
+Added a "Send a Friend" referral callout box to the results page (visible on the non-payer/skip path). Friend invite sent via Resend, admin notification sent to scott.magnacca1@gmail.com, referral logged to new "Referrals" tab in Google Sheets.
+
+### Changes
+- **New `send-referral.js` Netlify Function:** Sends friend invite (Resend), admin notification, appends to Google Sheets "Referrals" tab. Sheets logging non-fatal
+- **Referral callout box on results page:** Gold-bordered card with friend name + email fields, shown on skip path via `showCourseCTA()`
+- **`sendReferral()` JS:** Input validation, loading state, success/error feedback
+- **Google Sheets setup required:** Create "Referrals" tab manually with headers: Timestamp, Referrer Name, Referrer Email, Referrer Score, Friend Name, Friend Email, Status
+- **Commit:** 9d21f5c
+
+---
+
+## v16.6 — Scroll-Triggered Reading-Pace Reveal: Quick Tips Block (2026-04-05)
+
+### Summary
+"Before You Begin — Quick Tips" block now reveals line-by-line at human reading speed as user scrolls to it. IntersectionObserver only — no setTimeout batch trigger.
+
+### Changes
+- IDs added to all Quick Tips elements (`qiHeader`, `qiTip1`–`qiTip4`, `qiEncouragement`)
+- CSS: elements start `opacity:0; translateY(8px)`, `.qi-visible` transitions over 0.7s
+- IntersectionObserver fires once on scroll; stagger delays: 0 / 1400 / 2800 / 4200 / 5600 / 7400ms
+- Pattern documented as global best practice in auto-memory and design playbook
+- **Commit:** f82f87e
+
+---
+
 ## v16.5 — Gate Panel UX Polish + Lakhani Quote Block (2026-04-05)
 
 ### Summary
