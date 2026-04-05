@@ -1,5 +1,26 @@
 # Changelog — Practical AI Skills IQ Quiz
 
+## v17.1 — Sequential Banner Reveal + 5-Minute Results Countdown (2026-04-05)
+
+### Summary
+Quiz questions now open with a deliberate 3-stage sequential reveal: Research Insight banner → Your Progress banner → Quiz card. Each stage fades and slides in with a shimmer sweep, creating a reading rhythm that primes the user with authority (fact), personalisation (score context), then engagement (question). Timing adapts by question index to avoid fatigue. Also re-applies 5-minute results countdown.
+
+### Changes — Sequential Banner Reveal
+- Two side-by-side banner cards above quiz card (`.banner-pair` grid, 1fr 1fr, collapses to 1col on mobile)
+- Left card (teal): Research Insight — unique cited stat/quote for each of questions 1–11
+- Right card (gold): Your Progress — score-aware message personalised with name and %-rank
+- Both start `opacity:0; translateY(10px)` — `.banner-in` triggers `.6s` spring transition
+- Shimmer sweep (`.banner-shimmer::after`) plays once per card after reveal
+- Quiz card hidden as `.quiz-card-hidden` — `.quiz-card-in` triggers `.9s` fade-up
+- Adaptive timing: Q1/Q6 milestones = 3s per stage; Q2–5 = 2s; Q7–11 = 1.5s
+- Q0: no banners, card reveals immediately — zero friction on question 1
+- `showMotivation()` fully replaced with new sequential system
+
+### Changes — Results Countdown
+- `countdownSeconds`: 90 → 300 (5 min), display `1:30` → `5:00`, urgent threshold `<=20` → `<=60`
+
+---
+
 ## v16.9 — Lakhani Quote: Harvard Crimson colour + narrower + lower (2026-04-05)
 
 ### Summary

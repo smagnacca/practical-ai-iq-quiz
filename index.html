@@ -322,7 +322,74 @@ a{color:inherit;text-decoration:none}
 .answered-dot.done{background:var(--babson-green)}
 .answered-dot.current{background:var(--bright-gold);box-shadow:0 0 0 2px rgba(238,175,0,.3)}
 
-/* ═══ MOTIVATION TEASER (halfway) ═══ */
+/* ═══ SEQUENTIAL BANNER REVEAL SYSTEM ═══ */
+
+/* Wrapper — hidden until JS injects & triggers */
+.banner-reveal-wrap{margin-bottom:18px;display:flex;flex-direction:column;gap:10px}
+
+/* The two side-by-side banner cards */
+.banner-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:540px){.banner-pair{grid-template-columns:1fr}}
+
+/* Individual banner card — starts invisible */
+.banner-card{
+  border-radius:8px;padding:14px 16px;
+  display:flex;gap:11px;align-items:flex-start;
+  opacity:0;transform:translateY(10px);
+  /* fill animation is triggered by adding .banner-in class */
+  transition:opacity .6s cubic-bezier(.4,0,.2,1), transform .6s cubic-bezier(.34,1.2,.64,1);
+  position:relative;overflow:hidden;
+}
+.banner-card.banner-in{opacity:1;transform:translateY(0)}
+
+/* Shimmer sweep that plays once after card appears */
+.banner-card::after{
+  content:'';position:absolute;top:0;left:-60%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+  transform:skewX(-15deg);
+  opacity:0;transition:none;
+}
+.banner-card.banner-shimmer::after{
+  animation:bannerShimmer .7s ease forwards;
+}
+@keyframes bannerShimmer{
+  0%{opacity:1;left:-60%}
+  100%{opacity:0;left:110%}
+}
+
+/* Left — research / fact */
+.banner-left{
+  background:linear-gradient(135deg,rgba(54,127,128,.09),rgba(54,127,128,.02));
+  border:1.5px solid rgba(54,127,128,.22);
+}
+/* Right — motivation / progress */
+.banner-right{
+  background:linear-gradient(135deg,rgba(238,175,0,.11),rgba(238,175,0,.02));
+  border:1.5px solid rgba(238,175,0,.28);
+}
+
+.banner-icon{font-size:1.15rem;flex-shrink:0;margin-top:1px;line-height:1}
+.banner-body{flex:1;min-width:0}
+.banner-tag{
+  font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  margin-bottom:5px;display:block;
+}
+.banner-left  .banner-tag{color:var(--peacock)}
+.banner-right .banner-tag{color:#7a5f1a}
+.banner-text{font-size:.8rem;color:var(--text);line-height:1.55;font-style:italic}
+.banner-cite{font-size:.66rem;color:var(--babson-green);font-weight:600;margin-top:4px;display:block}
+.banner-msg-text{font-size:.82rem;font-weight:600;line-height:1.5}
+.banner-msg-text.positive{color:#1a7a3a}
+.banner-msg-text.encourage{color:#1d5bbf}
+.banner-msg-text.neutral{color:var(--babson-green)}
+.banner-msg-text.teaser{color:#7a5f1a}
+.banner-sub-text{font-size:.71rem;color:var(--text-soft);line-height:1.4;margin-top:4px}
+
+/* Quiz card hidden until its reveal turn */
+.quiz-card-hidden{opacity:0;transform:translateY(12px);transition:opacity .9s cubic-bezier(.4,0,.2,1),transform .9s cubic-bezier(.4,0,.2,1)}
+.quiz-card-hidden.quiz-card-in{opacity:1;transform:translateY(0)}
+
+/* ═══ LEGACY MOTIVATION (mobile fallback — kept for <540px) ═══ */
 .motivation{text-align:center;padding:16px 24px;border-radius:8px;font-size:1rem;font-weight:600;margin-bottom:22px;animation:slideUp .5s ease}
 .motivation.positive{background:linear-gradient(135deg,rgba(39,174,96,.14),rgba(39,174,96,.06));color:#1a7a3a;border:1.5px solid rgba(39,174,96,.25);box-shadow:0 2px 12px rgba(39,174,96,.1)}
 .motivation.positive::before{content:'🔥 '}
@@ -1053,8 +1120,9 @@ a{color:inherit;text-decoration:none}
     </div>
     <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
     <div class="urgency-track"><div class="urgency-fill" id="urgencyFill"></div></div>
-    <div id="motivationArea"></div>
-    <div class="card">
+    <!-- Sequential banner reveal: injected by showBanners() -->
+    <div id="bannerRevealWrap"></div>
+    <div class="card quiz-card-hidden" id="quizCardEl">
       <div class="card-body" id="questionArea"></div>
       <div style="padding:0 48px 36px">
         <div style="display:flex;justify-content:center;gap:5px;margin-bottom:16px" id="progressDots"></div>
@@ -1208,7 +1276,7 @@ a{color:inherit;text-decoration:none}
             </div>
             <div class="countdown-box">
               <span class="countdown-label">Offer expires in</span>
-              <span class="countdown-timer" id="countdownTimer">1:30</span>
+              <span class="countdown-timer" id="countdownTimer">5:00</span>
             </div>
 
             <!-- CTA -->
@@ -1281,7 +1349,7 @@ const QUESTIONS=[
 ],correct:0}
 ];
 
-let currentQ=0,answers=[],timer=null,timeLeft=60,userData={},quizStartTime=null,countdownInterval=null,countdownSeconds=90,exitIntentShown=false;
+let currentQ=0,answers=[],timer=null,timeLeft=60,userData={},quizStartTime=null,countdownInterval=null,countdownSeconds=300,exitIntentShown=false;
 
 // ──── LIVE FEED ROTATION ────
 const LIVE_DATA=[
@@ -1576,30 +1644,146 @@ function selectOption(el,idx){
   }
 }
 
-function showMotivation(){
-  const area=document.getElementById('motivationArea');if(currentQ===0){area.innerHTML='';return}
-  const c=answers.filter(a=>a&&a.isCorrect).length,p=Math.round(c/currentQ*100),fp=Math.min(95,Math.max(42,p+Math.floor(Math.random()*15)+10));
-  let msg='',cls='neutral';
+/* ── Research insight data keyed by question index ─────────── */
+const BANNER_FACTS=[
+  {q:1, icon:'📊', text:'"77% of employers now expect AI-ready professionals — yet most graduates arrive unprepared."', cite:'CarringtonCrisp, See the Future 2026 · 1,863 respondents, 40 countries'},
+  {q:2, icon:'🌍', text:'"The fastest-growing skill in every industry isn\'t technical — it\'s knowing when and how to apply AI strategically."', cite:'World Economic Forum, Future of Jobs 2025'},
+  {q:3, icon:'🎓', text:'"58% of universities are failing to graduate AI-ready professionals, despite surging employer demand."', cite:'CarringtonCrisp, See the Future 2026'},
+  {q:4, icon:'💡', text:'"Prompt engineering alone isn\'t the differentiator. The real edge is the judgment and intent behind the prompt."', cite:'HBR AI Leadership Report, 2025'},
+  {q:5, icon:'⚡', text:'"Professionals using AI for research and drafting report up to 4× faster project completion."', cite:'MIT Sloan Management Review, 2025'},
+  {q:6, icon:'📈', text:'"AI-skilled workers command a 56% wage premium over comparable peers in the same roles."', cite:'PwC, Global AI Jobs Barometer 2025'},
+  {q:7, icon:'🧠', text:'"AI fluency is the new financial literacy — the earlier you invest in it, the higher the compounding career return."', cite:'Ethan Mollick, Wharton School'},
+  {q:8, icon:'🏢', text:'"3 in 4 executives say their teams lack the AI skills needed to meet their 2026 business goals."', cite:'Deloitte AI Readiness Survey, 2025'},
+  {q:9, icon:'📊', text:'"AI-skilled workers command a 56% wage premium. Skills split across two axes: technical proficiency and strategic application."', cite:'PwC, Global AI Jobs Barometer 2025'},
+  {q:10,icon:'🎯', text:'"During summer internships, students were immediately expected to use AI — often without formal training."', cite:'Greg Hanifee, Kellogg School of Management'},
+  {q:11,icon:'🚀', text:'"85% of jobs in 2030 don\'t exist yet — but AI literacy will be required in nearly all of them."', cite:'Dell Technologies / Institute for the Future'}
+];
 
-  // Q6 Teaser (midway)
-  if(currentQ===6){
-    msg=`Halfway there! Your results are shaping up to be... interesting. 🤔`;
-    cls='teaser';
+/* ── Adaptive reveal timing by question index ──────────────── */
+function getRevealTiming(qIdx){
+  // Q0: no banners (first question, no score yet)
+  // Q1 & Q6 (milestone): full 3s + 3s → 3s question
+  // Q2–5: 2s + 2s → 2.5s question
+  // Q7–11: 1.5s + 1.5s → 2s question (respect the user's time)
+  if(qIdx===1||qIdx===6)return{left:0,right:2800,card:5800,shimmer:400};
+  if(qIdx<=5)          return{left:0,right:1900,card:4000,shimmer:300};
+  return                      {left:0,right:1400,card:3100,shimmer:250};
+}
+
+/* ── Build motivation message for right banner ──────────────── */
+function buildRightBanner(qIdx){
+  if(qIdx===0)return null;
+  const c=answers.filter(a=>a&&a.isCorrect).length;
+  const p=qIdx>0?Math.round(c/qIdx*100):0;
+  const fp=Math.min(95,Math.max(42,p+Math.floor(Math.random()*12)+8));
+  let icon,msg,cls,sub=null;
+
+  if(qIdx===1&&answers[0]?.isCorrect){
+    icon='🎉';msg=`Great start, ${userData.firstName||''}! You nailed the first one.`;cls='positive';
+  }else if(qIdx===1){
+    icon='💡';msg=`No worries — these questions challenge even experienced professionals.`;cls='encourage';
+  }else if(qIdx===6){
+    icon='🤔';msg=`Halfway there! Your results are shaping up to be... interesting.`;cls='teaser';
+    sub=`Finish strong — the second half is where professionals separate.`;
+  }else if(p>=80){
+    const opts=[
+      `Impressive! You're outperforming ${fp}% of all participants.`,
+      `${c} of ${qIdx} correct — top ${100-fp}% territory!`,
+      `Your AI skills awareness is well above average.`
+    ];
+    icon='🔥';msg=opts[qIdx%opts.length];cls='positive';
+    sub=`Keep this pace — you're tracking toward an elite score.`;
+  }else if(p>=50){
+    const opts=[
+      `You're ahead of ${fp}% of quiz-takers so far.`,
+      `Solid progress — these scenarios stump most professionals.`,
+      `${c} correct and building. Stay focused.`
+    ];
+    icon='📊';msg=opts[qIdx%opts.length];cls='neutral';
+  }else{
+    const opts=[
+      `Tough scenarios — most professionals find these challenging.`,
+      `Don't worry about score yet. Every gap you spot is an opportunity.`,
+      `Identifying weaknesses here is exactly what this quiz is for.`
+    ];
+    icon='💡';msg=opts[qIdx%opts.length];cls='encourage';
   }
-  else if(currentQ===1&&answers[0]?.isCorrect){msg=`Great start, ${userData.firstName}! You nailed the first one.`;cls='positive'}
-  else if(currentQ===1){msg=`No worries — these questions challenge even experienced professionals.`;cls='encourage'}
-  else if(p>=80){const m=[`Impressive! You're outperforming ${fp}% of all participants.`,`${c} out of ${currentQ} correct — top ${100-fp}% territory!`,`Your AI skills awareness is well above average.`];msg=m[currentQ%m.length];cls='positive'}
-  else if(p>=50){const m=[`You're doing better than ${fp}% of participants. Keep going!`,`Solid progress! These are tough — you're holding your own.`,`${c} correct so far — building a clear picture of your AI skills.`];msg=m[currentQ%m.length];cls='neutral'}
-  else{const m=[`These are tough — most professionals find them challenging.`,`Don't focus on score yet — identifying growth areas is the real value.`,`Every gap you find is an opportunity the market rewards.`];msg=m[currentQ%m.length];cls='encourage'}
-  let quoteHtml='';
-  const QUIZ_QUOTES=[
-    {q:3,text:'"77% of employers now expect AI-ready professionals — yet 58% say universities are falling short. The skills gap is yours to close."',cite:'CarringtonCrisp, See the Future 2026 (1,863 respondents, 40 countries)'},
-    {q:8,text:'"AI-skilled workers command a 56% wage premium. Skills split across two axes: technical proficiency and strategic application — using AI to lower costs, find revenue, and make better decisions."',cite:'PwC, Global AI Jobs Barometer 2025'},
-    {q:11,text:'"During summer internships, students were immediately expected to use AI — often without formal training." The professionals who close this gap now will lead tomorrow.',cite:'Greg Hanifee, Kellogg School of Management'}
-  ];
-  const matchedQuote=QUIZ_QUOTES.find(qq=>qq.q===currentQ);
-  if(matchedQuote){quoteHtml=`<div class="inspire-quiz"><blockquote>${matchedQuote.text}</blockquote><cite>— ${matchedQuote.cite}</cite></div>`}
-  area.innerHTML=`<div class="motivation ${cls}">${msg}</div>${quoteHtml}`;
+  return{icon,msg,cls,sub};
+}
+
+/* ── Main sequential reveal orchestrator ───────────────────── */
+function showMotivation(){
+  const wrap=document.getElementById('bannerRevealWrap');
+  const cardEl=document.getElementById('quizCardEl');
+  if(!wrap||!cardEl)return;
+
+  // Always reset card to hidden before sequencing
+  cardEl.classList.remove('quiz-card-in');
+  wrap.innerHTML='';
+
+  // Q0: no banners — reveal card immediately
+  if(currentQ===0){
+    requestAnimationFrame(()=>setTimeout(()=>cardEl.classList.add('quiz-card-in'),60));
+    return;
+  }
+
+  const fact=BANNER_FACTS.find(f=>f.q===currentQ);
+  const right=buildRightBanner(currentQ);
+  const timing=getRevealTiming(currentQ);
+
+  // If neither banner has content for this question, just reveal card
+  if(!fact&&!right){
+    requestAnimationFrame(()=>setTimeout(()=>cardEl.classList.add('quiz-card-in'),60));
+    return;
+  }
+
+  // Build banner HTML (both cards start opacity:0 via CSS)
+  const leftHtml=fact
+    ? `<div class="banner-card banner-left" id="bannerLeft">
+         <div class="banner-icon">${fact.icon}</div>
+         <div class="banner-body">
+           <span class="banner-tag">Research Insight</span>
+           <div class="banner-text">${fact.text}</div>
+           <span class="banner-cite">— ${fact.cite}</span>
+         </div>
+       </div>`
+    : `<div></div>`;
+
+  const rightHtml=right
+    ? `<div class="banner-card banner-right" id="bannerRight">
+         <div class="banner-icon">${right.icon}</div>
+         <div class="banner-body">
+           <span class="banner-tag">Your Progress</span>
+           <div class="banner-msg-text ${right.cls}">${right.msg}</div>
+           ${right.sub?`<div class="banner-sub-text">${right.sub}</div>`:''}
+         </div>
+       </div>`
+    : `<div></div>`;
+
+  wrap.innerHTML=`<div class="banner-reveal-wrap"><div class="banner-pair">${leftHtml}${rightHtml}</div></div>`;
+
+  // ── Sequence: left banner → right banner → shimmer both → card ──
+  const leftEl=document.getElementById('bannerLeft');
+  const rightEl=document.getElementById('bannerRight');
+
+  // Step 1: reveal left (research insight)
+  if(leftEl){
+    setTimeout(()=>{
+      leftEl.classList.add('banner-in');
+      setTimeout(()=>leftEl.classList.add('banner-shimmer'), timing.shimmer);
+    }, timing.left + 80);
+  }
+
+  // Step 2: reveal right (progress) after left has had its moment
+  if(rightEl){
+    setTimeout(()=>{
+      rightEl.classList.add('banner-in');
+      setTimeout(()=>rightEl.classList.add('banner-shimmer'), timing.shimmer);
+    }, timing.right + 80);
+  }
+
+  // Step 3: reveal quiz card
+  setTimeout(()=>cardEl.classList.add('quiz-card-in'), timing.card);
 }
 
 function nextQuestion(){
@@ -1749,8 +1933,8 @@ function showResults(){
 }
 
 function startCountdown(){
-  countdownSeconds=90;const el=document.getElementById('countdownTimer');
-  countdownInterval=setInterval(()=>{countdownSeconds--;const m=Math.floor(countdownSeconds/60),s=countdownSeconds%60;el.textContent=`${m}:${s.toString().padStart(2,'0')}`;if(countdownSeconds<=20)el.classList.add('urgent');if(countdownSeconds<=0){clearInterval(countdownInterval);el.textContent='Expired';document.getElementById('btnPay').textContent='Offer Expired';document.getElementById('btnPay').disabled=true}},1000);
+  countdownSeconds=300;const el=document.getElementById('countdownTimer');
+  countdownInterval=setInterval(()=>{countdownSeconds--;const m=Math.floor(countdownSeconds/60),s=countdownSeconds%60;el.textContent=`${m}:${s.toString().padStart(2,'0')}`;if(countdownSeconds<=60)el.classList.add('urgent');if(countdownSeconds<=0){clearInterval(countdownInterval);el.textContent='Expired';document.getElementById('btnPay').textContent='Offer Expired';document.getElementById('btnPay').disabled=true}},1000);
 }
 
 function handlePayment(){
