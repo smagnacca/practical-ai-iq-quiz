@@ -210,6 +210,12 @@ a{color:inherit;text-decoration:none}
 .field input,.field select{width:100%;border:1.5px solid var(--border);border-radius:3px;padding:12px 14px;font-size:.9rem;font-family:'Inter',sans-serif;background:var(--cream);transition:border-color .18s,background .18s,box-shadow .18s}
 .field input:focus,.field select:focus{outline:none;border-color:var(--babson-green);background:var(--white);box-shadow:0 0 0 3px rgba(0,102,68,.1)}
 .field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' fill='none' stroke='%236B6560' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;cursor:pointer}
+.quiz-instructions{background:linear-gradient(135deg,rgba(0,102,68,.04),rgba(238,175,0,.06));border:1.5px solid rgba(201,168,76,.35);border-radius:10px;padding:18px 20px;margin:18px 0 14px}
+.qi-header{font-size:.82rem;font-weight:700;color:var(--babson-green);letter-spacing:.04em;text-transform:uppercase;margin-bottom:12px}
+.qi-list{list-style:none;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:8px}
+.qi-list li{font-size:.85rem;color:var(--text);line-height:1.55;padding-left:20px;position:relative}
+.qi-list li::before{content:'→';position:absolute;left:0;color:var(--babson-green);font-weight:700}
+.qi-encouragement{font-size:.85rem;font-style:italic;color:var(--babson-green);font-weight:600;border-top:1px solid rgba(201,168,76,.25);padding-top:10px;margin-top:4px;line-height:1.5}
 .btn-start{display:block;width:100%;background:var(--mango);color:var(--white);border:none;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;border-radius:3px;transition:all .2s;margin-top:6px;box-shadow:0 2px 8px rgba(238,175,0,.2);animation:ctaFlash 3s ease-in-out infinite}
 .btn-start:hover{background:var(--bright-gold);box-shadow:0 4px 12px rgba(238,175,0,.3);transform:translateY(-1px)}
 .btn-start:disabled{background:#C8C4BC;cursor:default;box-shadow:none}
@@ -220,10 +226,17 @@ a{color:inherit;text-decoration:none}
 /* ═══ QUIZ TIMER (prominent) ═══ */
 .quiz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .quiz-progress-text{font-size:.82rem;font-weight:600;color:var(--text-soft)}
-.quiz-timer{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--white);background:var(--babson-green);padding:10px 20px;border-radius:28px;transition:all .3s;font-size:1rem}
-.quiz-timer svg{width:20px;height:20px}
-.quiz-timer.warning{background:var(--danger);animation:timerUrgent 1s ease-in-out infinite}
-#timerDisplay{font-family:'Merriweather',serif;font-size:1.3rem;min-width:34px;text-align:center}
+/* Soft urgency bar — replaces countdown clock */
+.quiz-pace-label{font-size:.72rem;font-weight:600;color:var(--text-soft);letter-spacing:.04em;transition:color .4s}
+.quiz-pace-label.pace-easy{color:var(--success)}
+.quiz-pace-label.pace-move{color:#D97706}
+.quiz-pace-label.pace-go{color:var(--danger)}
+.urgency-track{height:4px;background:rgba(0,0,0,.06);border-radius:2px;margin-bottom:20px;overflow:hidden}
+.urgency-fill{height:100%;width:100%;border-radius:2px;background:var(--success);transition:width 1s linear,background .8s ease}
+.urgency-fill.pace-move{background:#F59E0B}
+.urgency-fill.pace-go{background:var(--danger);animation:urgencyPulse 1s ease-in-out infinite}
+.urgency-fill.answered{background:var(--babson-green);transition:width .4s cubic-bezier(.4,0,.2,1),background .3s}
+@keyframes urgencyPulse{0%,100%{opacity:1}50%{opacity:.5}}
 
 /* ═══ PROGRESS BAR (animated shine + sparkle) ═══ */
 .progress-track{height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin-bottom:24px;position:relative}
@@ -994,6 +1007,16 @@ a{color:inherit;text-decoration:none}
             <option value="Other">Other</option>
           </select>
         </div>
+        <div class="quiz-instructions">
+          <div class="qi-header">📋 Before You Begin — Quick Tips</div>
+          <ul class="qi-list">
+            <li><strong>Go with your gut.</strong> These questions are scenario-based — your first instinct is usually right. Don't overthink it.</li>
+            <li><strong>No tricks.</strong> Every question has one clearly best answer based on real-world AI application. Read each option fully before choosing.</li>
+            <li><strong>Pace yourself.</strong> A soft timer nudges you to keep moving, but there's no penalty — answer at your own pace.</li>
+            <li><strong>Be honest.</strong> The more accurately you answer, the more useful and personalised your results will be.</li>
+          </ul>
+          <div class="qi-encouragement">You've got this. 💪 Most people find the results genuinely eye-opening — you might be surprised how much you already know.</div>
+        </div>
         <button class="btn-start" id="btnStartQuiz" onclick="startQuiz()">Start My Assessment →</button>
         <p class="gate-privacy">🔒 Your information is 100% secure and never shared.</p>
         <p class="gate-spots"><span id="gateSpots">47</span> personalized reports remaining today</p>
@@ -1008,12 +1031,10 @@ a{color:inherit;text-decoration:none}
   <div class="container">
     <div class="quiz-header">
       <span class="quiz-progress-text" id="progressText">Question 1 of 12</span>
-      <div class="quiz-timer" id="quizTimer">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        <span id="timerDisplay">60s</span>
-      </div>
+      <span class="quiz-pace-label" id="quizPaceLabel">Take your time</span>
     </div>
     <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="urgency-track"><div class="urgency-fill" id="urgencyFill"></div></div>
     <div id="motivationArea"></div>
     <div class="card">
       <div class="card-body" id="questionArea"></div>
@@ -1368,7 +1389,7 @@ function renderQuestion(){
   showMotivation();
 
   // Restart timer only if this question hasn't been answered yet
-  if(!answers[currentQ]){timeLeft=60;startTimer();}else{clearInterval(timer);const d=document.getElementById('timerDisplay'),tE=document.getElementById('quizTimer');d.textContent='—';tE.classList.remove('warning');}
+  if(!answers[currentQ]){startTimer();}else{clearInterval(timer);resetUrgencyBar();}
 
   const letters=['A','B','C','D'];
   let html=`<div class="q-category"><span class="label">${q.category}</span></div>`;
@@ -1440,35 +1461,45 @@ function updateProgressDots(){
 }
 
 function startTimer(){
-  clearInterval(timer);const display=document.getElementById('timerDisplay'),timerEl=document.getElementById('quizTimer');
-  display.textContent=timeLeft+'s';timerEl.classList.remove('warning');
+  clearInterval(timer);
+  timeLeft=60;
+  const fill=document.getElementById('urgencyFill'),label=document.getElementById('quizPaceLabel');
+  fill.style.width='100%';
+  fill.className='urgency-fill';
+  label.className='quiz-pace-label pace-easy';
+  label.textContent='Take your time';
   timer=setInterval(()=>{
     timeLeft--;
-    display.textContent=timeLeft+'s';
-    if(timeLeft<=5)timerEl.classList.add('warning');
-    if(timeLeft<=0){
+    const pct=Math.max(0,(timeLeft/60)*100);
+    fill.style.width=pct+'%';
+    if(timeLeft<=20&&timeLeft>8){
+      fill.className='urgency-fill pace-move';
+      label.className='quiz-pace-label pace-move';
+      label.textContent='Keep moving…';
+    } else if(timeLeft<=8&&timeLeft>0){
+      fill.className='urgency-fill pace-go';
+      label.className='quiz-pace-label pace-go';
+      label.textContent='Wrap it up!';
+    } else if(timeLeft<=0){
       clearInterval(timer);
-      timerEl.classList.remove('warning');
-      display.textContent='0s';
-      showTimeoutFeedback();
+      fill.style.width='0%';
+      fill.className='urgency-fill pace-go';
+      label.textContent='Pick an answer to continue';
+      label.className='quiz-pace-label pace-go';
     }
   },1000);
 }
 
+function resetUrgencyBar(){
+  // Called when user answers — bar snaps to full green
+  clearInterval(timer);
+  const fill=document.getElementById('urgencyFill'),label=document.getElementById('quizPaceLabel');
+  if(fill){fill.style.width='100%';fill.className='urgency-fill answered';}
+  if(label){label.className='quiz-pace-label pace-easy';label.textContent='Answered ✓';}
+}
+
 function showTimeoutFeedback(){
-  // Don't auto-answer or auto-advance — show a prompt and let user continue
-  let msg=document.getElementById('timeoutMsg');
-  if(!msg){
-    msg=document.createElement('div');
-    msg.id='timeoutMsg';
-    msg.style.cssText='margin:0 0 16px;padding:12px 18px;background:#FEE2E2;border:1.5px solid #EF4444;border-radius:6px;color:#B91C1C;font-size:.88rem;font-weight:600;text-align:center;animation:fadeUp .3s ease';
-    msg.textContent='⏱ Time\'s up — please select an answer and advance to the next question.';
-    const area=document.getElementById('questionArea');
-    // Insert before the options div
-    const opts=area.querySelector('.options');
-    if(opts)area.insertBefore(msg,opts);else area.appendChild(msg);
-  }
-  // Keep options fully interactive — user can still pick and answer
+  // Timer expired — bar already at 0 — just keep options interactive, no auto-advance
   updateNavButtons();
   updateProgressDots();
 }
@@ -1491,9 +1522,7 @@ function showAnswerFlash(){
   f.style.opacity='1';setTimeout(()=>{f.style.opacity='0';},900);
 }
 function selectOption(el,idx){
-  clearInterval(timer);
-  // Remove timeout message if present
-  const msg=document.getElementById('timeoutMsg');if(msg)msg.remove();
+  resetUrgencyBar();
   playClickSound();
   showAnswerFlash();
   const q=QUESTIONS[currentQ],isCorrect=idx===q.correct,elapsed=60-timeLeft;
