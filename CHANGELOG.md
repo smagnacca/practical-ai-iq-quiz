@@ -1,5 +1,25 @@
 # Changelog — Practical AI Skills IQ Quiz
 
+## v16.5 — Gate Panel UX Polish + Lakhani Quote Block (2026-04-05)
+
+### Summary
+Three targeted improvements to the gate section. Content in the green left panel now pins to the top instead of floating in the vertical center. Stats count up from 0 over 3.2 seconds for stronger visual impact. A compact Lakhani quote box (dark red gradient) fills the empty green space below the gate cards.
+
+### Changes
+- **Gate panel top-aligned:** Changed `justify-content:center` → `justify-content:flex-start` on `.gate-sketch-panel` so title, stats, and sketches anchor to the top of the green box immediately
+- **Count-up stats (3.2s):** Both 56% and 77% now count from 0 over 3,200ms (was 800ms) with flash highlight at completion — fires 1s after gate opens
+- **Lakhani quote box:** Added compact red-gradient rounded box below gate layout: *"AI is not going to replace humans, but humans with AI are going to replace humans without AI."* — Professor Karim Lakhani, HBS. Fades in with `fadeUp` animation
+- **v16.2 stat reorder retained:** Stats (56%/77%) remain above sketches as set in v16.2
+
+---
+
+## v16.2 — Stats Moved Above Sketches in Gate Panel (2026-04-05)
+
+### Summary
+Moved the 56% / 77% stat block to appear above the before/after sketch boxes in the gate left panel (previously below). Count-up JS continues to work via class selector.
+
+---
+
 ## v16.1 — Full A-Grade Visual Audit + CHANGELOG Sync (2026-04-05)
 
 ### Summary
