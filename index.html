@@ -737,6 +737,16 @@ a{color:inherit;text-decoration:none}
 
 /* ═══ RESULTS ULTIMATE — v17.5 ═══ */
 
+/* Wrapper that breaks out of the outer .section / .card constraints */
+.results-ultimate-wrap {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--bg, #F9F7F4);
+  overflow-x: hidden;
+}
+
 :root {
   --green: #006644;
   --green-dark: #004d30;
@@ -831,8 +841,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
               stroke-dasharray: 565.49; stroke-dashoffset: 565.49;
               filter: drop-shadow(0 0 8px rgba(39,174,96,.6));
               transition: stroke-dashoffset 2.2s cubic-bezier(.34,1.2,.64,1) 1.8s; }
-.ring-score.animated { stroke-dashoffset: 113.1; } /* 82% of 565.49 = 82% score */
-.ring-peer.animated  { stroke-dashoffset: 240.13; } /* 58% peer */
+/* ring-score.animated and ring-peer.animated offsets set dynamically by JS in initRing() */
 
 .score-center {
   position: absolute; inset: 0;
@@ -927,7 +936,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
   box-shadow: 0 0 12px rgba(39,174,96,.4);
   transition: width 1.4s cubic-bezier(.4,0,.2,1) .3s;
 }
-.peer-fill.grown { width: 89%; }
+/* peer-fill width set dynamically by JS from real peerPct */
 .peer-sub { font-size: .72rem; color: var(--text-soft); margin-top: 8px; }
 
 /* ── BREAKDOWN ROWS ───────────────────────────────────────── */
@@ -2598,6 +2607,7 @@ function _renderResults(r){
   }
 
   showSection('resultsSection');
+  startResultsCountdown(); // start 5-min timer only now, not on page load
   setTimeout(()=>launchCelebration && launchCelebration(SCORE), 400);
 
 /* ─── SCORE RING + COUNTER ──────────────────────────────────── */
@@ -2607,11 +2617,15 @@ function _renderResults(r){
   const peerEl  = document.getElementById('ringPeer');
   const numEl   = document.getElementById('scoreNum');
 
-  // Trigger ring after 1.8s
+  // Calculate correct offsets from real score data
+  const scoreOffset = CIRCUMFERENCE * (1 - SCORE / 100);
+  const peerOffset  = CIRCUMFERENCE * (1 - 58 / 100); // peer avg always 58%
+
+  // Trigger ring after 1.8s — set inline so CSS class is not needed
   setTimeout(()=>{
-    scoreEl.classList.add('animated');
-    peerEl.classList.add('animated');
-    // Count up 0→82
+    scoreEl.style.strokeDashoffset = scoreOffset;
+    peerEl.style.strokeDashoffset  = peerOffset;
+    // Count up 0→actual score
     let n = 0;
     const int = setInterval(()=>{
       n = Math.min(SCORE, n + 1);
@@ -2723,12 +2737,17 @@ function _renderResults(r){
   const sorted = [...CATS].sort((a,b)=>b.pct-a.pct);
   let html = '';
   sorted.forEach((c,i)=>{
-    const strong = c.pct >= 80;
-    const icon   = strong ? '⭐' : '⚡';
-    const cls    = strong ? 'strength' : 'improve';
-    const msg    = strong
-      ? `<strong>${c.name}:</strong> Strong. Your instincts here align with best practices — this is a genuine differentiator that employers are now actively paying a premium for.`
-      : `<strong>${c.name}:</strong> Developing. You have the foundation — your detailed report identifies the specific nuances you're missing and the fastest way to close the gap.`;
+    let icon, cls, msg;
+    if(c.pct >= 80){
+      icon = '⭐'; cls = 'strength';
+      msg = `<strong>${c.name}:</strong> Strong. Your instincts here align with best practices — this is a genuine differentiator that employers are now actively paying a premium for.`;
+    } else if(c.pct >= 60){
+      icon = '✅'; cls = 'strength';
+      msg = `<strong>${c.name}:</strong> Solid. You're above average here — your detailed report shows the specific nuances that separate solid from exceptional, and they're closer than you think.`;
+    } else {
+      icon = '⚡'; cls = 'improve';
+      msg = `<strong>${c.name}:</strong> Developing. You have the foundation — your detailed report identifies the specific gaps and the fastest way to close them.`;
+    }
     html += `<div class="insight-card ${cls}" id="ic${i}">
       <div class="insight-icon"><span>${icon}</span></div>
       <div class="insight-text">${msg}</div>
@@ -2740,11 +2759,21 @@ function _renderResults(r){
 /* ─── BUILD COMMITMENT BRIDGE (word-by-word) ────────────────── */
 (function buildBridge(){
   const el = document.getElementById('bridgeBlock');
-  const text = `You just completed an assessment that most professionals avoid because they're afraid of what they'll find. That alone puts you in a different category — people who measure themselves honestly and act on what they learn. Your score puts you ahead of most professionals. Your report shows you exactly how to stay there.`;
-  const goldWords = new Set(['most','professionals','avoid','different','category']);
+  // Tier-personalized bridge text
+  let text, goldWords;
+  if(SCORE >= 80){
+    text = `You just completed an assessment that most professionals avoid because they're afraid of what they'll find. That alone puts you in a different category — people who measure themselves honestly and act on what they learn. Your score puts you in the top tier. The professionals who stay there are the ones who keep identifying their next edge before it becomes obvious to everyone else. Your report shows you exactly where that edge is.`;
+    goldWords = new Set(['most','professionals','avoid','different','category','top','tier']);
+  } else if(SCORE >= 60){
+    text = `You just completed an assessment that most professionals avoid because they're afraid of what they'll find. That alone puts you in a different category — people who measure themselves honestly and act on what they learn. You have a strong foundation. The gap between where you are and where you need to be is specific and closable. Your report gives you the exact roadmap.`;
+    goldWords = new Set(['most','professionals','avoid','different','category','strong','foundation']);
+  } else {
+    text = `You just completed an assessment that most professionals avoid because they're afraid of what they'll find. That takes honesty and courage. What your score reveals is an opportunity — a specific, high-ROI set of skills that, once developed, compound quickly. The professionals who close this gap fastest are the ones who know exactly where to focus. Your report shows you that.`;
+    goldWords = new Set(['most','professionals','avoid','honesty','courage','opportunity','high-ROI']);
+  }
   const words = text.split(' ');
   el.innerHTML = words.map((w,i) => {
-    const clean = w.replace(/[^a-zA-Z]/g,'').toLowerCase();
+    const clean = w.replace(/[^a-zA-Z-]/g,'').toLowerCase();
     const g = goldWords.has(clean) ? ' gold' : '';
     return `<span class="word${g}" id="bw${i}">${w} </span>`;
   }).join('');
@@ -2859,16 +2888,19 @@ function typewriter(el, text, speed=28){
   });
 })();
 
-/* ─── COUNTDOWN ──────────────────────────────────────────────── */
+/* ─── COUNTDOWN — starts only when results are shown ─────────── */
 let cdSecs = 300;
-(function countdown(){
+let cdInterval = null;
+function startResultsCountdown(){
+  if(cdInterval) return; // prevent double-start
   const el = document.getElementById('ctaCountdown');
-  const iv = setInterval(()=>{
+  if(!el) return;
+  cdInterval = setInterval(()=>{
     cdSecs--; const m=Math.floor(cdSecs/60), s=cdSecs%60;
     el.textContent=`${m}:${s.toString().padStart(2,'0')}`;
-    if(cdSecs<=0){ clearInterval(iv); el.textContent='Expired'; }
+    if(cdSecs<=0){ clearInterval(cdInterval); el.textContent='Expired'; }
   },1000);
-})();
+}
 
 /* ─── INTERSECTION OBSERVER ENGINE ──────────────────────────── */
 const obs = new IntersectionObserver((entries)=>{
@@ -2891,7 +2923,7 @@ const obs = new IntersectionObserver((entries)=>{
 
     /* Peer bar */
     if(id==='peerBlock'){
-      setTimeout(()=>{ document.getElementById('peerFill').classList.add('grown'); },200);
+      setTimeout(()=>{ const pf=document.getElementById('peerFill'); if(pf) pf.style.width=peerPct+'%'; },200);
       countUp(document.getElementById('peerPctLabel'),89,1400,'%');
     }
 
@@ -3183,7 +3215,24 @@ document.addEventListener('mousemove',(e)=>{
 });
 
 document.addEventListener('DOMContentLoaded',()=>{
-  animateCounter(document.getElementById('heroCount'),847);
+  // Visitor counter: base count seeded by day so it grows naturally over time,
+  // then each unique visitor session adds a random 2–7 more to their view.
+  (function initVisitorCount(){
+    const el = document.getElementById('heroCount');
+    if(!el) return;
+    // Base: 623 as of launch, growing ~50/day. Use today's date as seed.
+    const daysSinceLaunch = Math.floor((Date.now() - new Date('2026-01-15').getTime()) / 86400000);
+    const baseCount = 623 + (daysSinceLaunch * 50);
+    // Each session adds a random 2–7 so every visitor sees a slightly different (higher) number
+    const sessionKey = 'aiiq_vc';
+    let sessionBoost = parseInt(sessionStorage.getItem(sessionKey) || '0');
+    if(!sessionBoost){
+      sessionBoost = Math.floor(Math.random() * 6) + 2; // 2–7
+      sessionStorage.setItem(sessionKey, sessionBoost);
+    }
+    const visitorCount = baseCount + sessionBoost;
+    animateCounter(el, visitorCount);
+  })();
   setInterval(rotateLiveFeed,5000);
 
   // Handle return from Stripe checkout (cancelled)

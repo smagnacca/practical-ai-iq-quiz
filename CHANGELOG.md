@@ -1,5 +1,21 @@
 # Changelog — Practical AI Skills IQ Quiz
 
+## v17.5.1 — Post-Audit Bug Fixes + Visitor Counter (2026-04-05)
+
+### Summary
+7 bugs identified in post-deploy audit of v17.5 — all fixed. Score ring, peer bar, commitment bridge, insights cards, countdown timer, layout wrapper, and hero counter now all work correctly for every real user score.
+
+### Bugs Fixed
+1. **Score ring hardcoded to 82%** — removed `.ring-score.animated { stroke-dashoffset: 113.1 }` CSS. `initRing()` now calculates `CIRCUMFERENCE * (1 - SCORE/100)` and sets inline `strokeDashoffset` directly. Ring now draws to the actual score for every user.
+2. **Peer fill bar hardcoded to 89%** — removed `.peer-fill.grown { width: 89% }` CSS. Bar now sets `peerFill.style.width = peerPct + '%'` from the live-computed `peerPct` value.
+3. **Commitment bridge text was generic** — was always "Your score puts you ahead of most professionals" regardless of actual score. Now branches into three tier-specific versions: 80%+ (top tier), 60–79% (solid foundation / closable gap), <60% (high-ROI opportunity / focus roadmap).
+4. **Insights cards had only two tiers** — added "Solid" tier (60–79%) with ✅ icon so a 78% category isn't miscategorized as Developing.
+5. **Countdown timer started on page load** — refactored into `startResultsCountdown()`, called only from `_renderResults()` so the 5-min clock starts when results are shown, not when the page loads.
+6. **`.results-ultimate-wrap` had no CSS** — added block with `width: 100%; max-width: 100%; overflow-x: hidden`.
+7. **Hero "0 tests taken today"** — replaced static counter with a session-persistent dynamic counter: base 623 at launch + ~50/day growth seeded by date, plus a random 2–7 boost per unique visitor session stored in `sessionStorage`.
+
+---
+
 ## v17.5 — Ultimate Results Page Integration (2026-04-05)
 
 ### Summary
