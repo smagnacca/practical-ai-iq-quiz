@@ -232,6 +232,50 @@ a{color:inherit;text-decoration:none}
 .gate-spots{text-align:center;font-size:.78rem;color:var(--babson-green);font-weight:600;margin-top:10px}
 .gate-spots span{color:var(--danger)}
 
+/* ═══ QUIZ SIDEBAR LAYOUT — responsive 3-col desktop, 2-row tablet, stacked mobile ═══ */
+/* Desktop ≥1100px: left-fact | quiz-core | right-motivation */
+.quiz-outer{display:grid;grid-template-columns:210px 1fr 210px;grid-template-rows:auto 1fr;column-gap:24px;row-gap:0;align-items:start}
+.quiz-core{grid-column:2;grid-row:1/3}
+.quiz-sidebar-left{grid-column:1;grid-row:1}
+.quiz-sidebar-right{grid-column:3;grid-row:1}
+.quiz-sidebar{display:flex;flex-direction:column;gap:14px;position:sticky;top:24px}
+.quiz-sidebar-card{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:16px 14px;box-shadow:0 3px 16px rgba(0,0,0,.07);opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+.quiz-sidebar-card.sb-visible{opacity:1;transform:translateY(0)}
+.sb-label{font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:5px}
+.sb-label::before{content:'';display:inline-block;width:12px;height:2px;border-radius:1px}
+.quiz-sidebar-left .sb-label{color:var(--peacock)}.quiz-sidebar-left .sb-label::before{background:var(--peacock)}
+.quiz-sidebar-right .sb-label{color:var(--mango)}.quiz-sidebar-right .sb-label::before{background:var(--mango)}
+/* Left: fact/stat/quote */
+.quiz-sidebar-left .quiz-sidebar-card{border-left:3px solid var(--peacock);background:linear-gradient(160deg,rgba(54,127,128,.05) 0%,#fff 60%)}
+.sb-stat{font-family:'Merriweather',serif;font-size:1.9rem;font-weight:700;color:var(--babson-green);line-height:1;margin-bottom:3px}
+.sb-stat-desc{font-size:.78rem;color:var(--text-soft);line-height:1.5;margin-bottom:8px}
+.sb-quote{font-style:italic;font-size:.78rem;color:var(--text-soft);line-height:1.6;margin:0 0 5px;border:none;padding:0}
+.sb-cite{font-size:.68rem;color:var(--babson-green);font-weight:600;font-style:normal}
+/* Right: motivation message */
+.quiz-sidebar-right .quiz-sidebar-card{border-left:3px solid var(--mango);background:linear-gradient(160deg,rgba(238,175,0,.07) 0%,#fff 60%)}
+.sb-icon{font-size:1.5rem;display:block;margin-bottom:7px}
+.sb-msg{font-size:.86rem;font-weight:600;line-height:1.55}
+.sb-msg.positive{color:#1a7a3a}.sb-msg.encourage{color:#1d5bbf}.sb-msg.neutral{color:var(--babson-green)}.sb-msg.teaser{color:#7a5f1a}
+.sb-sub{margin-top:8px;font-size:.73rem;color:var(--text-soft);line-height:1.45;padding-top:7px;border-top:1px solid var(--border)}
+/* Tablet 768–1099px: fact + motivation side by side ABOVE quiz card */
+@media(max-width:1099px) and (min-width:768px){
+  .quiz-outer{grid-template-columns:1fr 1fr;grid-template-rows:auto auto}
+  .quiz-sidebar-left{grid-column:1;grid-row:1}
+  .quiz-sidebar-right{grid-column:2;grid-row:1}
+  .quiz-core{grid-column:1/3;grid-row:2}
+  .quiz-sidebar{position:static;flex-direction:row;flex-wrap:wrap;gap:10px}
+  .quiz-sidebar-card{flex:1;min-width:160px}
+  #motivationArea{display:none}
+}
+/* Mobile <768px: sidebars hidden, motivationArea (enhanced) shown */
+@media(max-width:767px){
+  .quiz-outer{grid-template-columns:1fr;grid-template-rows:auto}
+  .quiz-sidebar-left,.quiz-sidebar-right{display:none}
+  .quiz-core{grid-column:1;grid-row:1}
+  #motivationArea{display:block}
+}
+@media(min-width:768px){#motivationArea{display:none}}
+
 /* ═══ QUIZ TIMER (prominent) ═══ */
 .quiz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .quiz-progress-text{font-size:.82rem;font-weight:600;color:var(--text-soft)}
@@ -1047,22 +1091,42 @@ a{color:inherit;text-decoration:none}
 <!-- ═══════════ QUIZ ═══════════ -->
 <section class="section" id="quizSection">
   <div class="container">
+    <!-- Progress bar + header span full width ABOVE the 3-col grid -->
     <div class="quiz-header">
       <span class="quiz-progress-text" id="progressText">Question 1 of 12</span>
       <span class="quiz-pace-label" id="quizPaceLabel">Take your time</span>
     </div>
     <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
     <div class="urgency-track"><div class="urgency-fill" id="urgencyFill"></div></div>
+    <!-- Mobile-only motivation banner -->
     <div id="motivationArea"></div>
-    <div class="card">
-      <div class="card-body" id="questionArea"></div>
-      <div style="padding:0 48px 36px">
-        <div style="display:flex;justify-content:center;gap:5px;margin-bottom:16px" id="progressDots"></div>
-        <div class="quiz-nav">
-          <div class="quiz-nav-left"><button class="btn-back" id="btnBack" onclick="prevQuestion()">← Back</button></div>
-          <div class="quiz-nav-right">
-            <button class="btn-next" id="btnNext" onclick="nextQuestion()" disabled>Next Question →</button>
+    <!-- 3-col quiz layout -->
+    <div class="quiz-outer">
+      <!-- LEFT SIDEBAR: contextual facts & quotes -->
+      <div class="quiz-sidebar-left">
+        <div class="quiz-sidebar" id="sidebarLeft">
+          <!-- populated by showSidebars() -->
+        </div>
+      </div>
+      <!-- CENTRE: quiz card -->
+      <div class="quiz-core">
+        <div class="card">
+          <div class="card-body" id="questionArea"></div>
+          <div style="padding:0 48px 36px">
+            <div style="display:flex;justify-content:center;gap:5px;margin-bottom:16px" id="progressDots"></div>
+            <div class="quiz-nav">
+              <div class="quiz-nav-left"><button class="btn-back" id="btnBack" onclick="prevQuestion()">← Back</button></div>
+              <div class="quiz-nav-right">
+                <button class="btn-next" id="btnNext" onclick="nextQuestion()" disabled>Next Question →</button>
+              </div>
+            </div>
           </div>
+        </div>
+      </div>
+      <!-- RIGHT SIDEBAR: motivational messages -->
+      <div class="quiz-sidebar-right">
+        <div class="quiz-sidebar" id="sidebarRight">
+          <!-- populated by showSidebars() -->
         </div>
       </div>
     </div>
@@ -1208,7 +1272,7 @@ a{color:inherit;text-decoration:none}
             </div>
             <div class="countdown-box">
               <span class="countdown-label">Offer expires in</span>
-              <span class="countdown-timer" id="countdownTimer">1:30</span>
+              <span class="countdown-timer" id="countdownTimer">5:00</span>
             </div>
 
             <!-- CTA -->
@@ -1281,7 +1345,7 @@ const QUESTIONS=[
 ],correct:0}
 ];
 
-let currentQ=0,answers=[],timer=null,timeLeft=60,userData={},quizStartTime=null,countdownInterval=null,countdownSeconds=90,exitIntentShown=false;
+let currentQ=0,answers=[],timer=null,timeLeft=60,userData={},quizStartTime=null,countdownInterval=null,countdownSeconds=300,exitIntentShown=false;
 
 // ──── LIVE FEED ROTATION ────
 const LIVE_DATA=[
@@ -1421,7 +1485,7 @@ function renderQuestion(){
   const q=QUESTIONS[currentQ],area=document.getElementById('questionArea'),pct=(currentQ/QUESTIONS.length*100);
   document.getElementById('progressText').textContent=`Question ${currentQ+1} of ${QUESTIONS.length}`;
   document.getElementById('progressFill').style.width=pct+'%';
-  showMotivation();
+  showSidebars();
 
   // Restart timer only if this question hasn't been answered yet
   if(!answers[currentQ]){startTimer();}else{clearInterval(timer);resetUrgencyBar();}
@@ -1576,30 +1640,119 @@ function selectOption(el,idx){
   }
 }
 
-function showMotivation(){
-  const area=document.getElementById('motivationArea');if(currentQ===0){area.innerHTML='';return}
-  const c=answers.filter(a=>a&&a.isCorrect).length,p=Math.round(c/currentQ*100),fp=Math.min(95,Math.max(42,p+Math.floor(Math.random()*15)+10));
-  let msg='',cls='neutral';
+/* ── Sidebar content data ─────────────────────────────────── */
+const SIDEBAR_LEFT_DATA=[
+  {q:0,  stat:null, quote:'"Identifying your AI skill gaps now is the highest-leverage career move of this decade."', cite:'McKinsey Global Institute, 2025'},
+  {q:1,  stat:'77%', desc:'of employers now expect AI-ready hires — yet most grads arrive unprepared.', cite:'CarringtonCrisp, See the Future 2026'},
+  {q:2,  stat:null, quote:'"The fastest-growing skill in every industry isn\'t technical — it\'s knowing when and how to apply AI strategically."', cite:'World Economic Forum, Future of Jobs 2025'},
+  {q:3,  stat:'58%', desc:'of universities are failing to graduate AI-ready professionals, despite employer demand.', cite:'CarringtonCrisp, 1,863 respondents, 40 countries'},
+  {q:4,  stat:null, quote:'"Prompt engineering alone isn\'t the differentiator. It\'s the judgment behind the prompt."', cite:'HBR, AI Leadership Report 2025'},
+  {q:5,  stat:'4×', desc:'faster project completion reported by professionals who use AI for research and drafting.', cite:'MIT Sloan Management Review, 2025'},
+  {q:6,  stat:null, quote:'"Half of the quiz done — the professionals who finish this are already in the top tier for self-awareness."', cite:'Practical AI IQ Research'},
+  {q:7,  stat:'56%', desc:'wage premium for AI-skilled workers vs. comparable non-AI peers in the same roles.', cite:'PwC, Global AI Jobs Barometer 2025'},
+  {q:8,  stat:null, quote:'"AI fluency is the new financial literacy — the earlier you invest in it, the higher the compounding return."', cite:'Ethan Mollick, Wharton School'},
+  {q:9,  stat:'3 in 4', desc:'executives say their teams lack the AI skills needed to meet 2026 business goals.', cite:'Deloitte AI Readiness Survey, 2025'},
+  {q:10, stat:null, quote:'"During internships, students were immediately expected to use AI — often without any formal training."', cite:'Greg Hanifee, Kellogg School of Management'},
+  {q:11, stat:'85%', desc:'of jobs in 2030 don\'t exist yet — but AI literacy will be required in nearly all of them.', cite:'Dell Technologies / Institute for the Future'}
+];
 
-  // Q6 Teaser (midway)
-  if(currentQ===6){
-    msg=`Halfway there! Your results are shaping up to be... interesting. 🤔`;
-    cls='teaser';
+const SIDEBAR_RIGHT_DATA=[
+  {q:0,  icon:'🎯', msg:'Every question reveals a real, market-valued skill gap. Answer honestly — that\'s where the value is.', cls:'neutral', sub:null},
+  {q:1,  icon:'💡', msg:'Q1 done. These scenarios are designed for working professionals — you\'re building awareness with every answer.', cls:'encourage', sub:null},
+  {q:2,  icon:'📊', msg:null, cls:'neutral', sub:null}, // dynamic
+  {q:3,  icon:'🔥', msg:null, cls:'positive', sub:null}, // dynamic
+  {q:4,  icon:'💡', msg:null, cls:'encourage', sub:null}, // dynamic
+  {q:5,  icon:'📈', msg:null, cls:'neutral', sub:null}, // dynamic
+  {q:6,  icon:'🤔', msg:'Halfway there! Your results are taking shape. The second half is where professionals separate from the pack.', cls:'teaser', sub:'Finish strong — your full profile unlocks at the end.'},
+  {q:7,  icon:'🔥', msg:null, cls:'positive', sub:null}, // dynamic
+  {q:8,  icon:'💡', msg:null, cls:'encourage', sub:null}, // dynamic
+  {q:9,  icon:'📊', msg:null, cls:'neutral', sub:null}, // dynamic
+  {q:10, icon:'⚡', msg:null, cls:'positive', sub:'Almost there — your personalized report is nearly ready.'},
+  {q:11, icon:'🏁', msg:'Final question. Your full AI IQ profile is one answer away.', cls:'positive', sub:'Results generate instantly. 🎓'}
+];
+
+function buildRightMsg(qIdx){
+  const c=answers.filter(a=>a&&a.isCorrect).length,p=qIdx>0?Math.round(c/qIdx*100):0;
+  const fp=Math.min(95,Math.max(42,p+Math.floor(Math.random()*12)+8));
+  const fixed=SIDEBAR_RIGHT_DATA[qIdx];
+  if(fixed&&fixed.msg)return{icon:fixed.icon,msg:fixed.msg,cls:fixed.cls,sub:fixed.sub};
+  // dynamic based on score
+  let icon,msg,cls,sub=null;
+  if(qIdx===0){icon='🎯';msg=`Welcome, ${userData.firstName||'there'}! 12 real-world scenarios. Answer honestly for the most accurate profile.`;cls='neutral';}
+  else if(p>=80){
+    const opts=[`You're outperforming ${fp}% of all participants.`,`${c} of ${qIdx} correct — top ${100-fp}% territory!`,`Your AI awareness is well above average.`];
+    icon='🔥';msg=opts[qIdx%opts.length];cls='positive';sub=`Keep this up — you're tracking toward an elite score.`;
+  }else if(p>=50){
+    const opts=[`You're ahead of ${fp}% of quiz-takers so far.`,`Solid progress — these scenarios stump most professionals.`,`${c} correct and building. Stay focused.`];
+    icon='📊';msg=opts[qIdx%opts.length];cls='neutral';
+  }else{
+    const opts=[`Tough scenarios — most professionals find these challenging.`,`Don't worry about score yet. Every gap you spot is an opportunity.`,`Identifying weaknesses here is exactly what this quiz is for.`];
+    icon='💡';msg=opts[qIdx%opts.length];cls='encourage';
   }
-  else if(currentQ===1&&answers[0]?.isCorrect){msg=`Great start, ${userData.firstName}! You nailed the first one.`;cls='positive'}
-  else if(currentQ===1){msg=`No worries — these questions challenge even experienced professionals.`;cls='encourage'}
-  else if(p>=80){const m=[`Impressive! You're outperforming ${fp}% of all participants.`,`${c} out of ${currentQ} correct — top ${100-fp}% territory!`,`Your AI skills awareness is well above average.`];msg=m[currentQ%m.length];cls='positive'}
-  else if(p>=50){const m=[`You're doing better than ${fp}% of participants. Keep going!`,`Solid progress! These are tough — you're holding your own.`,`${c} correct so far — building a clear picture of your AI skills.`];msg=m[currentQ%m.length];cls='neutral'}
-  else{const m=[`These are tough — most professionals find them challenging.`,`Don't focus on score yet — identifying growth areas is the real value.`,`Every gap you find is an opportunity the market rewards.`];msg=m[currentQ%m.length];cls='encourage'}
-  let quoteHtml='';
-  const QUIZ_QUOTES=[
-    {q:3,text:'"77% of employers now expect AI-ready professionals — yet 58% say universities are falling short. The skills gap is yours to close."',cite:'CarringtonCrisp, See the Future 2026 (1,863 respondents, 40 countries)'},
-    {q:8,text:'"AI-skilled workers command a 56% wage premium. Skills split across two axes: technical proficiency and strategic application — using AI to lower costs, find revenue, and make better decisions."',cite:'PwC, Global AI Jobs Barometer 2025'},
-    {q:11,text:'"During summer internships, students were immediately expected to use AI — often without formal training." The professionals who close this gap now will lead tomorrow.',cite:'Greg Hanifee, Kellogg School of Management'}
-  ];
-  const matchedQuote=QUIZ_QUOTES.find(qq=>qq.q===currentQ);
-  if(matchedQuote){quoteHtml=`<div class="inspire-quiz"><blockquote>${matchedQuote.text}</blockquote><cite>— ${matchedQuote.cite}</cite></div>`}
-  area.innerHTML=`<div class="motivation ${cls}">${msg}</div>${quoteHtml}`;
+  return{icon,msg,cls,sub};
+}
+
+function showSidebars(){
+  const mobileArea=document.getElementById('motivationArea');
+  const sLeft=document.getElementById('sidebarLeft');
+  const sRight=document.getElementById('sidebarRight');
+
+  // Clear all zones
+  if(mobileArea)mobileArea.innerHTML='';
+  if(sLeft)sLeft.innerHTML='';
+  if(sRight)sRight.innerHTML='';
+
+  if(currentQ===0 && !answers[0]){
+    // Q1 — pre-answer: show welcoming sidebar stubs
+    if(sLeft){
+      const d=SIDEBAR_LEFT_DATA[0];
+      sLeft.innerHTML=`<div class="quiz-sidebar-card sb-visible"><div class="sb-label">Did You Know</div><div class="sb-quote">${d.quote}</div><cite class="sb-cite">— ${d.cite}</cite></div>`;
+    }
+    if(sRight){
+      const r=buildRightMsg(0);
+      sRight.innerHTML=`<div class="quiz-sidebar-card sb-visible"><div class="sb-label">Your Journey</div><span class="sb-icon">${r.icon}</span><div class="sb-msg ${r.cls}">${r.msg}</div></div>`;
+    }
+    return;
+  }
+
+  // LEFT — contextual fact for the CURRENT question being shown
+  const leftD=SIDEBAR_LEFT_DATA[currentQ]||SIDEBAR_LEFT_DATA[0];
+  if(sLeft){
+    let leftHtml='<div class="quiz-sidebar-card"><div class="sb-label">Research Insight</div>';
+    if(leftD.stat){
+      leftHtml+=`<div class="sb-stat">${leftD.stat}</div><div class="sb-stat-desc">${leftD.desc}</div><cite class="sb-cite">— ${leftD.cite}</cite>`;
+    }else{
+      leftHtml+=`<blockquote class="sb-quote">${leftD.quote}</blockquote><cite class="sb-cite">— ${leftD.cite}</cite>`;
+    }
+    leftHtml+='</div>';
+    sLeft.innerHTML=leftHtml;
+    requestAnimationFrame(()=>{setTimeout(()=>{const c=sLeft.querySelector('.quiz-sidebar-card');if(c)c.classList.add('sb-visible');},80);});
+  }
+
+  // RIGHT — motivation message
+  const r=buildRightMsg(currentQ);
+  if(sRight){
+    let rightHtml=`<div class="quiz-sidebar-card"><div class="sb-label">Your Progress</div><span class="sb-icon">${r.icon}</span><div class="sb-msg ${r.cls}">${r.msg}</div>`;
+    if(r.sub)rightHtml+=`<div class="sb-sub">${r.sub}</div>`;
+    rightHtml+='</div>';
+    sRight.innerHTML=rightHtml;
+    requestAnimationFrame(()=>{setTimeout(()=>{const c=sRight.querySelector('.quiz-sidebar-card');if(c)c.classList.add('sb-visible');},180);});
+  }
+
+  // MOBILE fallback — compact banner (shown on <768px via CSS)
+  if(mobileArea){
+    const c=answers.filter(a=>a&&a.isCorrect).length,p=currentQ>0?Math.round(c/currentQ*100):0;
+    let cls='neutral',msg=r.msg||'Keep going — you\'re building your AI IQ profile.';
+    if(r.cls==='positive')cls='positive';else if(r.cls==='encourage')cls='encourage';else if(r.cls==='teaser')cls='teaser';
+    const QUIZ_QUOTES=[
+      {q:3,text:'"77% of employers now expect AI-ready professionals — yet 58% say universities are falling short."',cite:'CarringtonCrisp, See the Future 2026'},
+      {q:8,text:'"AI-skilled workers command a 56% wage premium."',cite:'PwC, Global AI Jobs Barometer 2025'},
+      {q:11,text:'"The professionals who close this gap now will lead tomorrow."',cite:'Greg Hanifee, Kellogg School of Management'}
+    ];
+    const mq=QUIZ_QUOTES.find(qq=>qq.q===currentQ);
+    const quoteHtml=mq?`<div class="inspire-quiz" style="margin-top:8px"><blockquote style="font-style:italic;font-size:.8rem;color:var(--text-soft)">${mq.text}</blockquote><cite style="font-size:.7rem;color:var(--babson-green);font-weight:600">— ${mq.cite}</cite></div>`:'';
+    mobileArea.innerHTML=`<div class="motivation ${cls}">${r.icon} ${msg}</div>${quoteHtml}`;
+  }
 }
 
 function nextQuestion(){
@@ -1749,8 +1902,8 @@ function showResults(){
 }
 
 function startCountdown(){
-  countdownSeconds=90;const el=document.getElementById('countdownTimer');
-  countdownInterval=setInterval(()=>{countdownSeconds--;const m=Math.floor(countdownSeconds/60),s=countdownSeconds%60;el.textContent=`${m}:${s.toString().padStart(2,'0')}`;if(countdownSeconds<=20)el.classList.add('urgent');if(countdownSeconds<=0){clearInterval(countdownInterval);el.textContent='Expired';document.getElementById('btnPay').textContent='Offer Expired';document.getElementById('btnPay').disabled=true}},1000);
+  countdownSeconds=300;const el=document.getElementById('countdownTimer');
+  countdownInterval=setInterval(()=>{countdownSeconds--;const m=Math.floor(countdownSeconds/60),s=countdownSeconds%60;el.textContent=`${m}:${s.toString().padStart(2,'0')}`;if(countdownSeconds<=60)el.classList.add('urgent');if(countdownSeconds<=0){clearInterval(countdownInterval);el.textContent='Expired';document.getElementById('btnPay').textContent='Offer Expired';document.getElementById('btnPay').disabled=true}},1000);
 }
 
 function handlePayment(){
