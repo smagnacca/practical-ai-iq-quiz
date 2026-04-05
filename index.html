@@ -1341,7 +1341,10 @@ function renderQuestion(){
   // Restore previous answer selection if revisiting
   if(answers[currentQ]&&answers[currentQ].selected>=0){
     const opts=document.querySelectorAll('.opt');
-    opts.forEach(o=>o.style.pointerEvents='none');
+    // Only lock options if question timed out — normal revisits stay interactive
+    if(answers[currentQ].timedOut){
+      opts.forEach(o=>o.style.pointerEvents='none');
+    }
     opts[answers[currentQ].selected].classList.add('selected-revisit');
   }
 
@@ -1408,10 +1411,17 @@ function showTimeoutFeedback(){
 }
 
 function selectOption(el,idx){
-  if(answers[currentQ]!==undefined)return;clearInterval(timer);
+  // Block selection only if the question timed out (auto-answered)
+  if(answers[currentQ]!==undefined&&answers[currentQ].timedOut)return;
+  clearInterval(timer);
   const q=QUESTIONS[currentQ],isCorrect=idx===q.correct,elapsed=60-timeLeft;
   answers[currentQ]={selected:idx,correct:q.correct,isCorrect,timeTaken:elapsed,timedOut:false};
-  document.querySelectorAll('.opt').forEach((o,i)=>{o.style.pointerEvents='none';if(i===idx)o.classList.add('selected-revisit')});
+  // Clear any previous visual selection, then mark new choice
+  document.querySelectorAll('.opt').forEach((o,i)=>{
+    o.classList.remove('selected-revisit');
+    o.style.pointerEvents='none';
+    if(i===idx)o.classList.add('selected-revisit');
+  });
   updateNavButtons();
   updateProgressDots();
   // Auto-advance only if not on last question
