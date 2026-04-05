@@ -316,8 +316,24 @@ a{color:inherit;text-decoration:none}
 .btn-back{background:transparent;color:var(--text-soft);border:1.5px solid #ccc;padding:13px 22px;font-size:.9rem;font-weight:600;cursor:pointer;border-radius:3px;transition:all .2s}
 .btn-back:hover{background:#f5f3ef;border-color:#aaa;color:var(--text-dark)}
 .btn-back:disabled{opacity:0;pointer-events:none}
-.btn-submit{background:var(--bright-gold);color:#1B2E1B;border:none;padding:13px 32px;font-size:.9rem;font-weight:700;cursor:pointer;border-radius:3px;transition:all .2s;box-shadow:0 2px 8px rgba(201,168,76,.35)}
-.btn-submit:hover{background:#d4a815;box-shadow:0 4px 12px rgba(201,168,76,.5);transform:translateY(-1px)}
+.btn-submit{background:var(--babson-green);color:#fff;border:none;padding:13px 32px;font-size:.9rem;font-weight:700;cursor:pointer;border-radius:3px;transition:all .2s;box-shadow:0 2px 8px rgba(0,102,68,.35)}
+.btn-submit:hover{background:#004d30;box-shadow:0 4px 12px rgba(0,102,68,.5);transform:translateY(-1px)}
+@keyframes submitGlow{0%{box-shadow:0 0 8px 2px rgba(0,220,120,.5);background:var(--babson-green);}50%{box-shadow:0 0 28px 10px rgba(0,255,140,.75);background:#00a050;}100%{box-shadow:0 0 8px 2px rgba(0,220,120,.5);background:var(--babson-green);}}
+.btn-submit.glowing{animation:submitGlow 1.2s ease-in-out infinite;color:#fff;font-size:1rem;}
+@keyframes nudgePulse{0%{transform:scale(1);opacity:1;}40%{transform:scale(1.18);opacity:1;color:#f43f5e;}70%{transform:scale(1.08);opacity:1;}100%{transform:scale(1);opacity:1;}}
+.quiz-pace-label.nudge-flash{animation:nudgePulse .55s ease-in-out 3;font-size:.95rem !important;font-weight:800 !important;color:#f43f5e !important;}
+@keyframes computingPulse{0%,100%{opacity:.6;}50%{opacity:1;}}
+#computingOverlay{position:fixed;inset:0;background:rgba(10,20,15,.92);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;opacity:0;pointer-events:none;transition:opacity .4s;}
+#computingOverlay.active{opacity:1;pointer-events:all;}
+.computing-ring{width:90px;height:90px;border-radius:50%;border:4px solid rgba(0,200,100,.2);border-top-color:var(--babson-green);animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.computing-title{font-size:1.6rem;font-weight:800;color:#fff;letter-spacing:.04em;text-align:center;}
+.computing-sub{font-size:.95rem;color:rgba(255,255,255,.65);text-align:center;max-width:280px;line-height:1.5;}
+.computing-dots span{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--babson-green);margin:0 4px;animation:computingPulse 1.2s ease-in-out infinite;}
+.computing-dots span:nth-child(2){animation-delay:.2s;}
+.computing-dots span:nth-child(3){animation-delay:.4s;}
+.computing-bar-wrap{width:260px;height:6px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden;}
+.computing-bar-fill{height:100%;background:linear-gradient(90deg,var(--babson-green),#00e87a);width:0%;border-radius:3px;transition:width .15s linear;}
 .answered-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#ccc;margin:0 2px;vertical-align:middle;transition:background .3s}
 .answered-dot.done{background:var(--babson-green)}
 .answered-dot.current{background:var(--bright-gold);box-shadow:0 0 0 2px rgba(238,175,0,.3)}
@@ -1365,7 +1381,7 @@ const QUESTIONS=[
 ],correct:0}
 ];
 
-let currentQ=0,answers=[],timer=null,timeLeft=60,userData={},quizStartTime=null,countdownInterval=null,countdownSeconds=300,exitIntentShown=false;
+let currentQ=0,answers=[],timer=null,timeLeft=60,userData={},quizStartTime=null,countdownInterval=null,countdownSeconds=300,exitIntentShown=false,nudgeTimer=null,autoAdvanceTimer=null;
 
 // ──── LIVE FEED ROTATION ────
 const LIVE_DATA=[
@@ -1508,7 +1524,7 @@ function renderQuestion(){
   showMotivation();
 
   // Restart timer only if this question hasn't been answered yet
-  if(!answers[currentQ]){startTimer();}else{clearInterval(timer);resetUrgencyBar();}
+  if(!answers[currentQ]){startTimer();startNudgeTimer();}else{clearInterval(timer);stopNudgeTimer();resetUrgencyBar();}
 
   const letters=['A','B','C','D'];
   let html=`<div class="q-category"><span class="label">${q.category}</span></div>`;
@@ -1553,7 +1569,7 @@ function updateNavButtons(){
       // Last question answered: show Submit Quiz button
       btnNext.style.display='none';
       const sub=document.createElement('button');
-      sub.className='btn-submit';sub.id='btnSubmit';sub.textContent='Submit Quiz ✓';
+      sub.className='btn-submit glowing';sub.id='btnSubmit';sub.textContent='Submit Quiz ✓';
       sub.onclick=()=>showResults();
       navRight.appendChild(sub);
     } else {
@@ -1640,8 +1656,76 @@ function showAnswerFlash(){
   if(!f){f=document.createElement('div');f.id='answerFlash';f.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--babson-green);color:#fff;padding:10px 24px;border-radius:24px;font-size:.82rem;font-weight:700;letter-spacing:.06em;z-index:999;pointer-events:none;opacity:0;transition:opacity .2s';f.textContent='✓ Answer recorded';document.body.appendChild(f);}
   f.style.opacity='1';setTimeout(()=>{f.style.opacity='0';},900);
 }
+/* ── Nudge timer: flash "Pick an answer" every 30s, auto-advance at 2min ── */
+function startNudgeTimer(){
+  stopNudgeTimer();
+  let nudgeCount=0;
+  nudgeTimer=setInterval(()=>{
+    nudgeCount++;
+    const label=document.getElementById('quizPaceLabel');
+    if(label&&answers[currentQ]===undefined){
+      label.classList.remove('nudge-flash');
+      void label.offsetWidth; // reflow to restart animation
+      label.textContent='Pick an answer to continue ↑';
+      label.classList.add('nudge-flash');
+      setTimeout(()=>{
+        if(answers[currentQ]===undefined){
+          label.classList.remove('nudge-flash');
+          label.textContent='Pick an answer to continue';
+        }
+      },1800);
+    }
+  },30000);
+  // Auto-advance at 2 minutes if unanswered
+  autoAdvanceTimer=setTimeout(()=>{
+    if(answers[currentQ]===undefined){
+      // Record a "skipped" answer
+      const q=QUESTIONS[currentQ];
+      answers[currentQ]={selected:-1,correct:q.correct,isCorrect:false,timeTaken:120,timedOut:true};
+      updateNavButtons();updateProgressDots();
+      if(currentQ<QUESTIONS.length-1){
+        window.scrollTo({top:0,behavior:'smooth'});
+        setTimeout(()=>nextQuestion(),600);
+      }
+    }
+  },120000);
+}
+function stopNudgeTimer(){
+  clearInterval(nudgeTimer);nudgeTimer=null;
+  clearTimeout(autoAdvanceTimer);autoAdvanceTimer=null;
+}
+
+/* ── Submit button glow ── */
+function startSubmitGlow(){
+  const btn=document.getElementById('btnSubmit');
+  if(btn)btn.classList.add('glowing');
+}
+
+/* ── Computing overlay ── */
+function showComputingOverlay(callback){
+  const overlay=document.getElementById('computingOverlay');
+  const fill=document.getElementById('computingBarFill');
+  if(!overlay){callback();return;}
+  overlay.classList.add('active');
+  let pct=0;
+  const fillInt=setInterval(()=>{
+    pct=Math.min(100,pct+(Math.random()*3.5+1.5));
+    fill.style.width=pct+'%';
+    if(pct>=100){clearInterval(fillInt);}
+  },80);
+  setTimeout(()=>{
+    overlay.style.opacity='0';
+    setTimeout(()=>{
+      overlay.classList.remove('active');
+      overlay.style.opacity='';
+      callback();
+    },400);
+  },5000);
+}
+
 function selectOption(el,idx){
   resetUrgencyBar();
+  stopNudgeTimer();
   playClickSound();
   showAnswerFlash();
   const q=QUESTIONS[currentQ],isCorrect=idx===q.correct,elapsed=60-timeLeft;
@@ -1654,9 +1738,15 @@ function selectOption(el,idx){
   });
   updateNavButtons();
   updateProgressDots();
-  // Auto-advance only if not on last question
+  // Auto-advance only if not on last question — scroll to top first
   if(currentQ<QUESTIONS.length-1){
+    setTimeout(()=>{window.scrollTo({top:0,behavior:'smooth'});},100);
     setTimeout(()=>nextQuestion(),1400);
+  } else {
+    // Last question answered — scroll to top so Submit button is visible
+    setTimeout(()=>{window.scrollTo({top:0,behavior:'smooth'});},100);
+    // Start glowing Submit button
+    setTimeout(()=>startSubmitGlow(),600);
   }
 }
 
@@ -1803,10 +1893,12 @@ function showMotivation(){
 }
 
 function nextQuestion(){
+  window.scrollTo({top:0,behavior:'smooth'});
   if(currentQ<QUESTIONS.length-1){currentQ++;renderQuestion();}
   else if(answers[currentQ]!==undefined){showResults();}
 }
 function prevQuestion(){
+  window.scrollTo({top:0,behavior:'smooth'});
   if(currentQ>0){currentQ--;renderQuestion();}
 }
 
@@ -1831,11 +1923,19 @@ function revealSequence(ids,delay=700){
 }
 
 function showResults(){
-  clearInterval(timer);const r=calculateResults();showSection('resultsSection');
+  clearInterval(timer);stopNudgeTimer();
+  const r=calculateResults();
+  // Show computing overlay for 5s, then reveal results
+  showComputingOverlay(()=>_renderResults(r));
+}
+
+function _renderResults(r){
+  showSection('resultsSection');
   setTimeout(()=>launchCelebration(r.pct),400);
 
-  // ── Score counter ──────────────────────────────────────────────
+  // ── Score counter — builds after overlay ──────────────────────
   let d=0;const se=document.getElementById('scorePct');
+  se.textContent='0%';
   const cu=setInterval(()=>{d++;se.textContent=d+'%';if(d>=r.pct)clearInterval(cu)},25);
 
   // ── Score ring color by tier ───────────────────────────────────
@@ -2283,5 +2383,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   obs.observe(anchor);
 })();
 </script>
+
+<!-- Computing Score Overlay -->
+<div id="computingOverlay">
+  <div class="computing-ring"></div>
+  <div class="computing-title">Computing Your Score…</div>
+  <div class="computing-bar-wrap"><div class="computing-bar-fill" id="computingBarFill"></div></div>
+  <div class="computing-sub">Analysing your answers across all 11 questions</div>
+  <div class="computing-dots"><span></span><span></span><span></span></div>
+</div>
+
 </body>
 </html>

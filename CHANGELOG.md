@@ -1,5 +1,18 @@
 # Changelog — Practical AI Skills IQ Quiz
 
+## v17.3 — Quiz UX: Auto-scroll, Nudge Timer, Submit Glow, Computing Overlay (2026-04-05)
+
+### Summary
+Five UX improvements to reduce friction and increase quiz completion: auto-scroll to top on every answer, 30s flash nudge with 2-min auto-advance, glowing Submit button on last question, 5-second "Computing your score" animated overlay before results, and score circle builds after overlay completes.
+
+### Changes
+- **Auto-scroll on answer:** `selectOption()` and `nextQuestion()`/`prevQuestion()` now call `window.scrollTo({top:0,behavior:'smooth'})` so user always sees the question headline after selecting
+- **Nudge flash:** `startNudgeTimer()` fires every 30s on unanswered questions — "Pick an answer to continue ↑" label animates with a scale+colour pulse (`nudge-flash` CSS keyframe); auto-advance at 2 minutes records a timed-out answer and moves to next question
+- **Submit glow:** `btn-submit.glowing` CSS keyframe pulses green glow at 1.2s interval; applied automatically when Submit button is created on last question
+- **Computing overlay:** `showComputingOverlay()` shows full-screen dark overlay with spinning ring, animated progress bar (fills to 100% over 5s), pulsing dots, then fades out and calls `_renderResults()`
+- **Score circle:** `_renderResults()` now called from overlay callback — counter builds from 0% after overlay dismissal
+- **New globals:** `nudgeTimer`, `autoAdvanceTimer` for proper cleanup on question change
+
 ## v17.2 — Hero Enhancements: Bell Curve Zone Labels + Quote + Copy (2026-04-05)
 
 ### Summary
