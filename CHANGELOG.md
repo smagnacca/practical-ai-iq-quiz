@@ -1,5 +1,21 @@
 # Changelog — Practical AI Skills IQ Quiz
 
+## v17.2 — Hero Enhancements: Bell Curve Zone Labels + Quote + Copy (2026-04-05)
+
+### Summary
+Three targeted improvements from design review: bell curve chart now shows semantic zone labels (Developing / Proficient / Expert) that animate in after the stat badges; Ed Bernier quote bumped to font-weight 600 for readability; hero sub-headline key stats bolded in gold to ensure both the wage premium and market shortage land on scan.
+
+### Changes
+- **Bell curve zone labels:** Added `#zoneLabels` SVG group with 3 pill-style labels (Developing 30–55, Proficient 55–80, Expert 80–100), each with colour-coded fill/stroke (red, gold, green), dashed tick connectors to x-axis, fade-in at 5500ms after badge5 pops
+- **Quote weight:** Ed Bernier blockquote `font-weight:500` → `font-weight:600`
+- **Hero copy:** `56% wage premium` and `58% say they're not getting them` wrapped in `<strong style="color:var(--bright-gold)">` for visual emphasis on scan
+
+### Not implemented (from Gemini review)
+- CTA size/contrast: already correct hierarchy — mango pulsing primary, ghost secondary
+- Avatar persona labels: deferred — requires real persona photography to justify
+
+---
+
 ## v17.1 — Sequential Banner Reveal + 5-Minute Results Countdown (2026-04-05)
 
 ### Summary

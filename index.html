@@ -747,7 +747,7 @@ a{color:inherit;text-decoration:none}
   <div class="hero-grid">
     <div class="hero-left">
       <h1>How Strong Are Your<br><em>Practical AI Skills?</em></h1>
-      <p class="hero-sub">AI-skilled workers command a 56% wage premium (PwC, 2025). 77% of employers expect AI-ready professionals — yet 58% say they're not getting them. This ~5-minute assessment benchmarks your practical AI abilities and reveals exactly where you stand.</p>
+      <p class="hero-sub">AI-skilled workers command a <strong style="color:var(--bright-gold)">56% wage premium</strong> (PwC, 2025). 77% of employers expect AI-ready professionals — yet <strong style="color:var(--bright-gold)">58% say they're not getting them.</strong> This ~5-minute assessment benchmarks your practical AI abilities and reveals exactly where you stand.</p>
       <div class="hero-buttons">
         <button class="hero-cta" onclick="showSection('gateSection')">Start Free Assessment →</button>
         <button class="hero-secondary" onclick="document.getElementById('howSection').scrollIntoView({behavior:'smooth'})">How It Works</button>
@@ -832,6 +832,22 @@ a{color:inherit;text-decoration:none}
             <text x="332" y="147" text-anchor="middle" fill="#C9A84C" font-size="13" font-weight="700" font-family="Inter,sans-serif">8%</text>
             <line x1="309" y1="142" x2="278" y2="154" stroke="rgba(201,168,76,.4)" stroke-width="1" stroke-dasharray="3,2"/>
           </g>
+          <!-- Zone labels — appear last, beneath the x-axis -->
+          <g id="zoneLabels" opacity="0">
+            <!-- Developing: score 30–55 -->
+            <rect x="58" y="198" width="72" height="18" rx="4" fill="rgba(192,57,43,.18)" stroke="rgba(192,57,43,.35)" stroke-width="1"/>
+            <text x="94" y="211" text-anchor="middle" fill="rgba(255,120,100,.9)" font-size="8.5" font-weight="700" font-family="Inter,sans-serif" letter-spacing=".06em">DEVELOPING</text>
+            <!-- Proficient: score 55–80 -->
+            <rect x="135" y="198" width="72" height="18" rx="4" fill="rgba(238,175,0,.18)" stroke="rgba(238,175,0,.4)" stroke-width="1"/>
+            <text x="171" y="211" text-anchor="middle" fill="#DDD055" font-size="8.5" font-weight="700" font-family="Inter,sans-serif" letter-spacing=".06em">PROFICIENT</text>
+            <!-- Expert: score 80–100 -->
+            <rect x="212" y="198" width="58" height="18" rx="4" fill="rgba(39,174,96,.18)" stroke="rgba(39,174,96,.4)" stroke-width="1"/>
+            <text x="241" y="211" text-anchor="middle" fill="rgba(100,220,140,.95)" font-size="8.5" font-weight="700" font-family="Inter,sans-serif" letter-spacing=".06em">EXPERT</text>
+            <!-- Tick connectors from zone label tops to x-axis -->
+            <line x1="94" y1="198" x2="94" y2="177" stroke="rgba(255,120,100,.25)" stroke-width="1" stroke-dasharray="2,2"/>
+            <line x1="171" y1="198" x2="171" y2="177" stroke="rgba(238,175,0,.25)" stroke-width="1" stroke-dasharray="2,2"/>
+            <line x1="241" y1="198" x2="241" y2="177" stroke="rgba(39,174,96,.25)" stroke-width="1" stroke-dasharray="2,2"/>
+          </g>
         </svg>
       </div>
     </div>
@@ -840,7 +856,7 @@ a{color:inherit;text-decoration:none}
 
 <!-- Inspirational Quote — Hero -->
 <div class="inspire-quote delay-1" style="padding:24px 32px;margin:0 auto;max-width:900px">
-  <blockquote style="color:var(--babson-green);font-size:1.05rem;line-height:1.7;font-weight:500">"Much like Excel quietly became mandatory in the 90s without anyone formally announcing it — AI fluency is becoming table stakes."</blockquote>
+  <blockquote style="color:var(--babson-green);font-size:1.05rem;line-height:1.7;font-weight:600">"Much like Excel quietly became mandatory in the 90s without anyone formally announcing it — AI fluency is becoming table stakes."</blockquote>
   <cite style="color:var(--peacock);opacity:1;font-size:.78rem">Ed Bernier, Assistant Dean for Career Services, Duke University</cite>
 </div>
 
@@ -2179,6 +2195,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   popIn(document.getElementById('badge3'), 4600);
   popIn(document.getElementById('badge4'), 4850);
   popIn(document.getElementById('badge5'), 5100);
+  fadeIn(document.getElementById('zoneLabels'), 600, 5500);
 })();
 </script>
 <script>
