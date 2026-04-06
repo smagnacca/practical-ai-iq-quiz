@@ -1,0 +1,7 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Scheduled function: check for leads needing follow-up emails (every 30 min)
+[functions."check-followups"]
+  schedule = "*/30 * * * *"
