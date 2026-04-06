@@ -2130,6 +2130,8 @@ function runGateEntrance(){
     if(formFields){formFields.style.transition=`opacity .5s ease, transform .5s ease`;formFields.style.opacity='1';formFields.style.transform='translateY(0)'}
   },4600);
 
+  // Step 9 (5.2s): Re-trigger Quick Tips observer now that gate is visible
+  setTimeout(()=>{if(window._qiObsRestart) window._qiObsRestart();},5200);
 }
 
 function animateCounterText(el, targetStr, dur){
@@ -3521,58 +3523,43 @@ document.addEventListener('DOMContentLoaded',()=>{
 </div>
 
 <script>
-/* ╔══════════════════════════════════════════════════════════╗ */
-/* ║ QUICK TIPS ANIMATION — FRESH REBUILD (v2)               ║ */
-/* ║ Scroll-triggered staggered reveal with typewriter effect  ║ */
-/* ╚══════════════════════════════════════════════════════════╝ */
+/* Quick Tips Animation v3 — works inside display:none gate */
 (function() {
   var triggered = false;
   var ids = ['qiHeader', 'qiTip1', 'qiTip2', 'qiTip3', 'qiTip4', 'qiEncouragement'];
-  var delays = [0, 1400, 2800, 4200, 5600, 7400]; // 1.4s stagger between each
+  var delays = [0, 1400, 2800, 4200, 5600, 7400];
   var anchor = document.getElementById('qiHeader');
-  
-  if (!anchor) {
-    console.warn('Quick Tips: qiHeader element not found');
-    return;
+  if (!anchor) return;
+
+  function revealTips() {
+    if (triggered) return;
+    triggered = true;
+    ids.forEach(function(id, i) {
+      setTimeout(function() {
+        var el = document.getElementById(id);
+        if (el) el.classList.add('qi-visible');
+      }, delays[i]);
+    });
   }
 
   var observer = new IntersectionObserver(function(entries) {
     if (entries[0].isIntersecting && !triggered) {
-      triggered = true;
-      console.log('Quick Tips animation triggered');
-      
-      ids.forEach(function(id, i) {
-        setTimeout(function() {
-          var element = document.getElementById(id);
-          if (element) {
-            element.classList.add('qi-visible');
-            console.log('Added qi-visible to:', id, 'at', delays[i], 'ms');
-          } else {
-            console.warn('Quick Tips: Element not found:', id);
-          }
-        }, delays[i]);
-      });
-      
+      revealTips();
       observer.disconnect();
     }
-  }, {
-    threshold: 0.3,           // Trigger when 30% visible
-    rootMargin: '0px 0px -40px 0px' // Trigger 40px before fully in viewport
-  });
+  }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
 
   observer.observe(anchor);
 
-  // Fallback: if animation hasn't fired after 10s, force-show everything
-  setTimeout(function() {
-    if (!triggered) {
-      triggered = true;
-      ids.forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el) el.classList.add('qi-visible');
-      });
-      observer.disconnect();
-    }
-  }, 10000);
+  // Expose restart so runGateEntrance can re-observe after display:none is removed
+  window._qiObsRestart = function() {
+    if (triggered) return;
+    observer.disconnect();
+    observer.observe(anchor);
+  };
+
+  // Fallback: force-show after 12s no matter what
+  setTimeout(function() { revealTips(); }, 12000);
 })();
 </script>
 
