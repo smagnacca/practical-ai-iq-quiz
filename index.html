@@ -2531,6 +2531,20 @@ function showResults(){
 }
 
 function _renderResults(r){
+  // ── Countdown state (must be declared before startResultsCountdown call) ──
+  let cdSecs = 300;
+  let cdInterval = null;
+  function startResultsCountdown(){
+    if(cdInterval) return; // prevent double-start
+    const el = document.getElementById('ctaCountdown');
+    if(!el) return;
+    cdInterval = setInterval(()=>{
+      cdSecs--; const m=Math.floor(cdSecs/60), s=cdSecs%60;
+      el.textContent=`${m}:${s.toString().padStart(2,'0')}`;
+      if(cdSecs<=0){ clearInterval(cdInterval); el.textContent='Expired'; }
+    },1000);
+  }
+
   // ── Wire real quiz data into the ultimate results UI ──────────
   const SCORE = r.pct;
   const NAME  = userData.firstName || 'You';
@@ -2879,19 +2893,7 @@ function typewriter(el, text, speed=28){
   });
 })();
 
-/* ─── COUNTDOWN — starts only when results are shown ─────────── */
-let cdSecs = 300;
-let cdInterval = null;
-function startResultsCountdown(){
-  if(cdInterval) return; // prevent double-start
-  const el = document.getElementById('ctaCountdown');
-  if(!el) return;
-  cdInterval = setInterval(()=>{
-    cdSecs--; const m=Math.floor(cdSecs/60), s=cdSecs%60;
-    el.textContent=`${m}:${s.toString().padStart(2,'0')}`;
-    if(cdSecs<=0){ clearInterval(cdInterval); el.textContent='Expired'; }
-  },1000);
-}
+/* ─── COUNTDOWN — moved to top of _renderResults to avoid TDZ ── */
 
 /* ─── INTERSECTION OBSERVER ENGINE ──────────────────────────── */
 const obs = new IntersectionObserver((entries)=>{
