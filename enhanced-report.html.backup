@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Your Practical AI Skills IQ Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --babson-green:#006644;--green:#1B4332;--green-mid:#0A5C38;--gold:#C9A84C;
+  --gold-light:#E8C96A;--bright-gold:#DDD055;--mango:#EEAF00;--peacock:#367F80;
+  --cream:#FAFAF7;--white:#FFFFFF;--danger:#C0392B;--success:#27AE60;
+  --summer-nights:#005172;--cedar-key:#DAD7CB;--alfresco:#567B8A;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:#2D3748;line-height:1.6;min-height:100vh}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' result='noise'/%3E%3C/filter%3E%3Crect width='100' height='100' fill='%23000' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:-1}
+
+/* Header */
+.report-header{background:linear-gradient(165deg,var(--summer-nights) 0%,var(--babson-green) 50%,var(--green) 100%);color:var(--white);padding:48px 24px 40px;text-align:center;position:relative;overflow:hidden}
+.report-header::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 30% 20%,rgba(221,208,85,.12) 0%,transparent 60%),radial-gradient(ellipse at 70% 80%,rgba(201,168,76,.08) 0%,transparent 50%);pointer-events:none;animation:parallaxShift 8s ease-in-out infinite alternate}
+@keyframes parallaxShift{0%{transform:translateY(-20px)}100%{transform:translateY(20px)}}
+.report-badge{display:inline-block;background:rgba(238,175,0,.2);border:1px solid rgba(238,175,0,.4);color:var(--bright-gold);font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:6px 18px;border-radius:24px;margin-bottom:16px}
+.report-title{font-family:'Merriweather',serif;font-size:1.8rem;margin-bottom:8px;line-height:1.3}
+.report-title .name{background:linear-gradient(90deg,var(--gold-light),#FFE566,var(--gold-light));background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmerText 3s linear infinite}
+@keyframes shimmerText{0%{background-position:-200% center}100%{background-position:200% center}}
+.report-date{color:rgba(255,255,255,.6);font-size:.82rem;margin-top:8px}
+
+/* Container */
+.container{max-width:720px;margin:0 auto;padding:0 20px}
+
+/* Score Hero */
+.score-hero{display:flex;align-items:center;gap:32px;padding:40px 0 32px;flex-wrap:wrap;justify-content:center}
+.score-ring{width:140px;height:140px;border-radius:50%;border:6px solid var(--gold);display:flex;align-items:center;justify-content:center;flex-direction:column;flex-shrink:0;animation:scorePulse 3s ease-in-out infinite,scoreColor 6s ease-in-out infinite;position:relative}
+@keyframes scorePulse{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,0)}50%{box-shadow:0 0 0 16px rgba(201,168,76,.2),0 0 60px rgba(201,168,76,.35)}}
+@keyframes scoreColor{0%,100%{color:var(--green);border-color:var(--green)}50%{color:var(--gold);border-color:var(--gold)}}
+.score-pct{font-family:'Merriweather',serif;font-size:2.4rem;font-weight:900;line-height:1}
+.score-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#718096;margin-top:4px}
+.score-summary{flex:1;min-width:260px}
+.score-summary h2{font-family:'Merriweather',serif;font-size:1.3rem;color:var(--green);margin-bottom:8px}
+.score-summary p{color:#4A5568;font-size:.92rem;line-height:1.65}
+
+/* Glass cards */
+.glass-card{background:rgba(255,255,255,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(0,100,68,.1);border-radius:16px;padding:32px;margin-bottom:28px;box-shadow:0 4px 24px rgba(0,0,0,.06)}
+.section-title{font-family:'Merriweather',serif;font-size:1.15rem;color:var(--green);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.section-title .icon{font-size:1.3rem}
+
+/* Breakdown bars */
+.breakdown-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;opacity:0;transform:translateY(12px);animation:fadeUp .5s ease forwards}
+.breakdown-row:nth-child(2){animation-delay:.1s}
+.breakdown-row:nth-child(3){animation-delay:.2s}
+.breakdown-row:nth-child(4){animation-delay:.3s}
+.breakdown-row:nth-child(5){animation-delay:.4s}
+.breakdown-row:nth-child(6){animation-delay:.5s}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.breakdown-cat{flex:0 0 180px;font-size:.82rem;font-weight:600;color:#2D3748;text-align:right}
+.breakdown-bar{flex:1;height:20px;background:rgba(0,0,0,.06);border-radius:10px;overflow:hidden;position:relative}
+.breakdown-bar-fill{height:100%;border-radius:10px;transition:width 1.2s cubic-bezier(.4,0,.2,1);position:relative}
+.breakdown-bar-fill::after{content:'';position:absolute;top:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:barShine 2.5s ease-in-out infinite}
+@keyframes barShine{0%{left:-40%}100%{left:140%}}
+.breakdown-score{flex:0 0 44px;font-size:.82rem;font-weight:700;text-align:center}
+.breakdown-score.high{color:var(--success)}
+.breakdown-score.mid{color:var(--mango)}
+.breakdown-score.low{color:var(--danger)}
+
+/* Insights */
+.insight-row{display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:12px;margin-bottom:12px;background:rgba(0,0,0,.02);border-left:4px solid transparent}
+.insight-row.strength{border-left-color:var(--success);background:rgba(39,174,96,.04)}
+.insight-row.improve{border-left-color:var(--mango);background:rgba(238,175,0,.04)}
+.insight-row.gap{border-left-color:var(--danger);background:rgba(192,57,43,.04)}
+.insight-icon{font-size:1.3rem;flex-shrink:0;margin-top:2px}
+.insight-content h4{font-size:.9rem;font-weight:700;color:var(--green);margin-bottom:4px}
+.insight-content p{font-size:.85rem;color:#4A5568;line-height:1.55}
+
+/* Tips */
+.tip-card{background:linear-gradient(135deg,rgba(0,100,68,.04),rgba(54,127,128,.04));border:1px solid rgba(0,100,68,.12);border-radius:12px;padding:20px;margin-bottom:14px}
+.tip-card h4{font-size:.88rem;font-weight:700;color:var(--green);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.tip-card p{font-size:.84rem;color:#4A5568;line-height:1.55}
+
+/* Benchmark */
+.benchmark-bar{display:flex;align-items:center;height:10px;background:linear-gradient(90deg,var(--danger),var(--mango),var(--success));border-radius:5px;position:relative;margin:20px 0 32px}
+.benchmark-marker{position:absolute;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
+.benchmark-marker .dot{width:16px;height:16px;border-radius:50%;border:3px solid var(--white);box-shadow:0 2px 8px rgba(0,0,0,.2);margin-bottom:4px}
+.benchmark-marker .label{font-size:.68rem;font-weight:600;white-space:nowrap;margin-top:4px}
+.benchmark-marker.you .dot{background:var(--babson-green)}
+.benchmark-marker.avg .dot{background:var(--mango)}
+
+/* CTA */
+.cta-section{background:linear-gradient(165deg,var(--summer-nights) 0%,var(--babson-green) 50%,#0A3A25 100%);color:var(--white);padding:44px 32px;border-radius:16px;text-align:center;margin:8px 0 40px;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 0%,rgba(238,175,0,.15) 0%,transparent 70%);pointer-events:none}
+.cta-section h2{font-family:'Merriweather',serif;font-size:1.3rem;margin-bottom:10px;position:relative}
+.cta-section p{color:rgba(255,255,255,.7);font-size:.88rem;margin-bottom:24px;max-width:440px;margin-left:auto;margin-right:auto;position:relative}
+.btn-course{display:inline-block;background:linear-gradient(135deg,var(--mango),var(--gold));color:var(--green);font-weight:700;font-size:1rem;padding:16px 40px;border-radius:8px;text-decoration:none;position:relative;animation:ctaFlash 3s ease-in-out infinite}
+@keyframes ctaFlash{0%,100%{box-shadow:0 4px 16px rgba(238,175,0,.3)}50%{box-shadow:0 4px 30px rgba(238,175,0,.6)}}
+
+/* PDF button */
+.btn-pdf{display:inline-flex;align-items:center;gap:8px;background:var(--white);color:var(--green);font-weight:600;font-size:.88rem;padding:12px 28px;border-radius:8px;border:2px solid var(--babson-green);cursor:pointer;transition:all .2s;margin-bottom:20px}
+.btn-pdf:hover{background:var(--babson-green);color:var(--white)}
+.btn-pdf:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* Footer */
+.report-footer{text-align:center;padding:24px;color:#A0AEC0;font-size:.74rem}
+
+/* Loading state */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px}
+.loading .spinner{width:40px;height:40px;border:4px solid rgba(0,100,68,.15);border-top-color:var(--babson-green);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{color:#718096;font-size:.88rem}
+
+/* Error */
+.error-state{text-align:center;padding:80px 24px}
+.error-state h2{font-family:'Merriweather',serif;color:var(--green);margin-bottom:12px}
+.error-state p{color:#718096;margin-bottom:24px}
+.error-state a{color:var(--babson-green);font-weight:600;text-decoration:none}
+
+/* Responsive */
+@media(max-width:768px){
+  .report-title{font-size:1.4rem}
+  .score-hero{flex-direction:column;text-align:center;gap:20px}
+  .breakdown-cat{flex:0 0 100%;text-align:left;margin-bottom:4px}
+  .breakdown-row{flex-wrap:wrap}
+  .glass-card{padding:24px 20px}
+  .score-ring{width:120px;height:120px}
+  .score-pct{font-size:2rem}
+}
+
+/* Reveal animation */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<div id="loadingState" class="loading">
+  <div class="spinner"></div>
+  <p>Loading your personalized report...</p>
+</div>
+
+<div id="errorState" class="error-state" style="display:none">
+  <h2>Report Not Found</h2>
+  <p>This report link may have expired or is invalid.</p>
+  <a href="/">Take the AI Skills IQ Quiz →</a>
+</div>
+
+<div id="reportContent" style="display:none">
+
+<header class="report-header">
+  <div class="report-badge">📊 Personalized AI Skills Report</div>
+  <h1 class="report-title">AI Skills IQ Report for <span class="name" id="reportName"></span></h1>
+  <p class="report-date" id="reportDate"></p>
+</header>
+
+<div class="container">
+
+  <!-- Score Hero -->
+  <div class="score-hero reveal" id="scoreHero">
+    <div class="score-ring">
+      <div class="score-pct" id="scorePct">0%</div>
+      <div class="score-label">Your Score</div>
+    </div>
+    <div class="score-summary">
+      <h2 id="scoreTitle"></h2>
+      <p id="scoreSummary"></p>
+    </div>
+  </div>
+
+  <!-- Executive Summary -->
+  <div class="glass-card reveal">
+    <div class="section-title"><span class="icon">🎯</span> Executive Summary</div>
+    <p style="font-size:.9rem;color:#4A5568;line-height:1.7;margin-bottom:12px"><strong>The job market is shifting faster than you might realize.</strong> According to the World Economic Forum's 2025-2026 Future of Jobs Report, AI will create <strong>170 million new roles while displacing 92 million</strong> — a net gain of 78 million jobs by 2030. But here's what matters: <strong>88% of organizations are now using AI, yet only 1-6% have achieved true mastery.</strong> This is your opportunity.</p>
+    <p style="font-size:.9rem;color:#4A5568;line-height:1.7"><strong>The professionals closing their AI skills gap see 56% wage premiums</strong> (PwC, 2025), faster promotions, and competitive advantages. Your report below shows exactly where you stand and what to focus on first.</p>
+  </div>
+
+  <!-- Category Breakdown -->
+  <div class="glass-card reveal" id="breakdownCard">
+    <div class="section-title"><span class="icon">📈</span> Score Breakdown by Category</div>
+    <p style="font-size:.85rem;color:#4A5568;margin-bottom:12px;line-height:1.6">Here's exactly how you performed across the six AI skills that matter most:</p>
+    <div id="breakdownArea"></div>
+  </div>
+
+  <!-- Benchmark -->
+  <div class="glass-card reveal" id="benchmarkCard">
+    <div class="section-title"><span class="icon">👥</span> How You Compare</div>
+    <p style="font-size:.85rem;color:#4A5568;margin-bottom:8px;line-height:1.6">This is where you stand compared to other professionals in your role:</p>
+
+    <div class="benchmark-bar">
+      <div class="benchmark-marker avg" id="avgMarker"><div class="dot"></div><div class="label">Avg: <span id="avgScore">52%</span></div></div>
+      <div class="benchmark-marker you" id="youMarker"><div class="dot"></div><div class="label">You: <span id="youScore"></span></div></div>
+    </div>
+    <p id="benchmarkText" style="font-size:.84rem;color:#4A5568;line-height:1.55"></p>
+  </div>
+
+  <!-- Detailed Insights -->
+  <div class="glass-card reveal" id="insightsCard">
+    <div class="section-title"><span class="icon">🔍</span> Detailed Category Analysis</div>
+    <p style="font-size:.85rem;color:#4A5568;margin-bottom:12px;line-height:1.6">Let's break down each skill:</p>
+    <div id="insightsArea"></div>
+  </div>
+
+  <!-- Action Steps -->
+  <div class="glass-card reveal" id="tipsCard">
+    <div class="section-title"><span class="icon">🚀</span> Your Recommended Next Steps</div>
+    <div id="tipsArea"></div>
+  </div>
+
+  <!-- Download PDF -->
+  <div style="text-align:center;margin:20px 0">
+    <button class="btn-pdf" onclick="downloadPDFFromFunction()" id="pdfButton">📄 Download PDF Report</button>
+    <div id="pdfLoadingState" style="display:none;text-align:center;margin:20px 0">
+      <div class="spinner" style="width:30px;height:30px;margin:0 auto 10px"></div>
+      <p style="color:#718096;font-size:.88rem">Creating your personalized report...</p>
+    </div>
+  </div>
+
+  <!-- 4-Day Course Highlights -->
+  <div class="glass-card reveal">
+    <div class="section-title"><span class="icon">📚</span> What You'll Master: The 4-Day Challenge</div>
+    <p style="font-size:.85rem;color:#4A5568;margin-bottom:20px;line-height:1.6">You now know where you stand. Here's what the 4-Day AI Skills Challenge covers:</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">
+      <div style="padding:16px;background:rgba(0,100,68,.04);border-left:4px solid var(--green);border-radius:8px">
+        <div style="font-weight:700;color:var(--green);font-size:.95rem;margin-bottom:6px">📊 Day 1: The AI Skills Gap Audit</div>
+        <p style="font-size:.84rem;color:#4A5568;line-height:1.5">Quantify where you stand. Calculate your personal 56% wage premium target in real dollars.</p>
+      </div>
+      <div style="padding:16px;background:rgba(0,100,68,.04);border-left:4px solid var(--green);border-radius:8px">
+        <div style="font-weight:700;color:var(--green);font-size:.95rem;margin-bottom:6px">💰 Day 2: ROI-First AI</div>
+        <p style="font-size:.84rem;color:#4A5568;line-height:1.5">Frame every AI tool as a revenue multiplier, not just a time-saver. Build your ROI pitch.</p>
+      </div>
+      <div style="padding:16px;background:rgba(0,100,68,.04);border-left:4px solid var(--green);border-radius:8px">
+        <div style="font-weight:700;color:var(--green);font-size:.95rem;margin-bottom:6px">🎯 Day 3: Decision Intelligence</div>
+        <p style="font-size:.84rem;color:#4A5568;line-height:1.5">Master when to trust AI, when to verify, and when to override. Build your judgment framework.</p>
+      </div>
+      <div style="padding:16px;background:rgba(0,100,68,.04);border-left:4px solid var(--green);border-radius:8px">
+        <div style="font-weight:700;color:var(--green);font-size:.95rem;margin-bottom:6px">⚡ Day 4: Prompting as a Power Skill</div>
+        <p style="font-size:.84rem;color:#4A5568;line-height:1.5">Learn the RCFC Framework. Write prompts that actually get results.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Course CTA -->
+  <div class="cta-section reveal" id="ctaSection">
+    <h2>You Know the Gap. Now Close It.</h2>
+    <p>You now know exactly where you stand and what needs improvement. The 4-Day Challenge turns your awareness into competitive advantage. Not next month—this week.</p>
+    <a href="https://4daycourse.netlify.app" target="_blank" class="btn-course">Explore the Course →</a>
+  </div>
+
+</div>
+
+<div class="report-footer">
+  &copy; 2026 Practical AI Skills IQ. All rights reserved.<br/>
+  This report was generated based on your quiz responses and is personalized to your results.
+</div>
+
+</div>
+
+<script>
+// ──── CATEGORY TIPS DATABASE ────
+const CATEGORY_TIPS = {
+  "AI Skills Gap Awareness": {
+    strength: "You're already ahead in recognizing where AI can add value. Keep auditing your workflow quarterly — AI tools evolve rapidly and new opportunities emerge constantly.",
+    improve: "You have a solid foundation but missed some nuances in how to systematically identify AI opportunities. Try mapping your weekly tasks by time spent and data-intensity to find hidden automation wins.",
+    gap: "Start with a simple exercise: list your top 10 weekly tasks, rank them by repetitiveness (1-10), and research one AI tool for each task scoring 7+. The 56% wage premium (PwC, 2025) goes to professionals who proactively identify these opportunities."
+  },
+  "ROI-First AI": {
+    strength: "Your ROI thinking is sharp. You understand that AI investments must justify themselves in dollars, not just excitement. Apply this rigor to every new tool evaluation.",
+    improve: "You grasp the basics of AI ROI but need to strengthen your quantitative analysis. Practice this framework: (Hours Saved × Hourly Cost × 4.33 weeks) - Tool Cost = Monthly ROI. Always include indirect savings (error reduction, faster delivery).",
+    gap: "ROI-first thinking is what separates strategic AI adoption from random tool experimentation. Start tracking time on your top 5 tasks this week. Then research AI tools for the most time-consuming one. Calculate: if it saves even 30% of that time, what's the dollar value?"
+  },
+  "Decision Intelligence": {
+    strength: "Excellent judgment in knowing when to trust AI and when human context matters. This is one of the most valuable skills in AI-augmented work — you understand the human-AI collaboration model.",
+    improve: "You have good instincts but need to formalize your AI oversight process. Create a simple checklist: (1) What data did the AI have? (2) What context is missing? (3) What's the cost of a wrong decision? Use this before accepting any AI recommendation.",
+    gap: "Decision Intelligence is about knowing when AI is right and when it's dangerously wrong. Key principle: AI excels at pattern recognition in data but misses context, relationships, and recent changes. Always ask: 'What does the AI NOT know about this situation?'"
+  },
+  "Prompting as Power Skill": {
+    strength: "Your prompting skills are advanced. You understand that specificity, context, and structure dramatically improve AI output quality. Share this skill with your team — it's a force multiplier.",
+    improve: "You know the basics of good prompting but can level up with advanced techniques: chain-of-thought (break complex tasks into steps), few-shot examples (show the AI what good output looks like), and role assignment (tell the AI what expert perspective to adopt).",
+    gap: "Prompting is the #1 skill that separates professionals who get mediocre AI results from those who get exceptional ones. Start with the 'Specificity Stack': Who is the audience? What format? What tone? What length? What examples should it follow? Include ALL of these in every prompt."
+  },
+  "AI Workflow Integration": {
+    strength: "You think systematically about how AI fits into existing workflows. This architectural thinking is rare and valuable — most people bolt AI on randomly instead of integrating it strategically.",
+    improve: "You understand workflow integration conceptually but need more hands-on experience. Pick your team's most painful workflow bottleneck. Map it step-by-step. Find the single point where AI integration would have the highest downstream impact. Start there.",
+    gap: "Workflow integration is where AI moves from novelty to transformative. Start simple: pick ONE workflow (e.g., client reporting). Map every step. Identify where data moves between systems manually. That manual handoff is your first AI integration opportunity."
+  },
+  "AI Communication & Persuasion": {
+    strength: "You know how to build trust around AI and communicate its value persuasively. This is a leadership skill — organizations need people who can bridge the gap between AI capability and stakeholder confidence.",
+    improve: "You communicate well about AI but can strengthen your persuasion framework. Use this structure: (1) Acknowledge the concern, (2) Explain your human+AI process, (3) Show a concrete ROI example, (4) Propose a low-risk pilot. This works for clients and executives alike.",
+    gap: "Communicating AI's value is essential for adoption — both internally and with clients. The key insight: people don't distrust AI, they distrust lack of process. Always lead with 'Here's how I validate AI output' before showing any AI-generated work."
+  }
+};
+
+// Industry benchmarks (average scores by industry)
+const INDUSTRY_BENCHMARKS = {
+  "Technology": 62, "Finance / Banking": 55, "Healthcare": 48,
+  "Education": 51, "Marketing / Advertising": 58, "Consulting": 60,
+  "Manufacturing": 44, "Retail / E-commerce": 52, "Legal": 42,
+  "Real Estate": 46, "Government / Public Sector": 39, "Nonprofit": 43,
+  "Other": 50
+};
+
+// ──── DECODE QUIZ DATA FROM URL ────
+function getReportData() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const encoded = params.get('data');
+    if (!encoded) return null;
+    const json = atob(encoded.replace(/-/g,'+').replace(/_/g,'/'));
+    return JSON.parse(json);
+  } catch(e) {
+    console.error('Failed to decode report data:', e);
+    return null;
+  }
+}
+
+// ──── RENDER REPORT ────
+function renderReport(data) {
+  const { firstName, email, industry, score, cats, totalCorrect, totalQuestions } = data;
+
+  // Header
+  document.getElementById('reportName').textContent = firstName;
+  document.getElementById('reportDate').textContent = `Generated ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} | ${industry || 'Professional'}`;
+
+  // Score
+  document.getElementById('youScore').textContent = score + '%';
+  let d = 0;
+  const se = document.getElementById('scorePct');
+  const cu = setInterval(() => { d++; se.textContent = d + '%'; if (d >= score) clearInterval(cu); }, 25);
+
+  // Score title + summary (personalized)
+  let title, summary;
+  if (score >= 80) {
+    title = `Exceptional, ${firstName}!`;
+    summary = `You scored ${score}% — placing you in the top tier of AI-ready professionals. Your Practical AI Skills IQ demonstrates strong instincts for AI-augmented work across ${totalCorrect} of ${totalQuestions} scenarios. Below, we've identified specific areas where targeted improvement could multiply your already-strong impact.`;
+  } else if (score >= 60) {
+    title = `Solid Foundation, ${firstName}`;
+    summary = `You scored ${score}% — showing real AI awareness with room to grow. You got ${totalCorrect} of ${totalQuestions} scenarios right, which puts you ahead of many professionals. The gaps identified below are exactly the areas where focused improvement yields the highest career ROI.`;
+  } else if (score >= 40) {
+    title = `Room to Grow, ${firstName}`;
+    summary = `You scored ${score}% with ${totalCorrect} correct out of ${totalQuestions} scenarios. The skills gap you've identified is exactly what the market is rewarding right now — professionals who close these gaps see a 56% wage premium (PwC, 2025). Your personalized action plan below shows you exactly where to focus.`;
+  } else {
+    title = `Important Wake-Up Call, ${firstName}`;
+    summary = `You scored ${score}% — but identifying this gap is the critical first step. With ${totalCorrect} of ${totalQuestions} correct, there's significant opportunity ahead. The good news: every gap below is closable with the right approach, and professionals who invest in these skills see measurable improvements within 90 days.`;
+  }
+  document.getElementById('scoreTitle').textContent = title;
+  document.getElementById('scoreSummary').textContent = summary;
+
+  // Category breakdown bars
+  const bA = document.getElementById('breakdownArea');
+  let bH = '';
+  const catEntries = Object.entries(cats);
+  catEntries.forEach(([cat, data]) => {
+    const cp = Math.round(data.correct / data.total * 100);
+    const cls = cp >= 80 ? 'high' : cp >= 50 ? 'mid' : 'low';
+    const col = cp >= 80 ? 'var(--success)' : cp >= 50 ? 'var(--mango)' : 'var(--danger)';
+    bH += `<div class="breakdown-row"><span class="breakdown-cat">${cat}</span><div class="breakdown-bar"><div class="breakdown-bar-fill" style="width:${cp}%;background:${col}"></div></div><span class="breakdown-score ${cls}">${cp}%</span></div>`;
+  });
+  bA.innerHTML = bH;
+
+  // Benchmark
+  const avg = INDUSTRY_BENCHMARKS[industry] || 50;
+  document.getElementById('avgScore').textContent = avg + '%';
+  document.getElementById('avgMarker').style.left = avg + '%';
+  document.getElementById('youMarker').style.left = Math.min(score, 95) + '%';
+  const diff = score - avg;
+  if (diff > 15) {
+    document.getElementById('benchmarkText').textContent = `You're ${diff} points above the average ${industry || 'professional'} score. You're in an elite group — but AI evolves weekly. Your report below shows where to maintain and extend this advantage.`;
+  } else if (diff > 0) {
+    document.getElementById('benchmarkText').textContent = `You're ${diff} points above average for ${industry || 'your industry'}. A solid position, but closing the remaining gaps could put you firmly in the top tier of AI-ready professionals.`;
+  } else {
+    document.getElementById('benchmarkText').textContent = `You're ${Math.abs(diff)} points below the ${industry || 'professional'} average. This is exactly why identifying your gaps matters — the professionals closing them fastest are capturing the 56% wage premium.`;
+  }
+
+  // Detailed insights
+  const iA = document.getElementById('insightsArea');
+  let iH = '';
+  catEntries.forEach(([cat, data]) => {
+    const cp = Math.round(data.correct / data.total * 100);
+    let icon, cls, level;
+    if (cp >= 80) { icon = '⭐'; cls = 'strength'; level = 'strength'; }
+    else if (cp >= 50) { icon = '⚡'; cls = 'improve'; level = 'improve'; }
+    else { icon = '🎯'; cls = 'gap'; level = 'gap'; }
+    const tip = CATEGORY_TIPS[cat]?.[level] || '';
+    iH += `<div class="insight-row ${cls}"><div class="insight-icon">${icon}</div><div class="insight-content"><h4>${cat} — ${cp}%</h4><p>${tip}</p></div></div>`;
+  });
+  iA.innerHTML = iH;
+
+  // Action steps (top 3 gaps or improvements)
+  const tA = document.getElementById('tipsArea');
+  let tH = '';
+  const sorted = catEntries.sort((a, b) => {
+    const aP = Math.round(a[1].correct / a[1].total * 100);
+    const bP = Math.round(b[1].correct / b[1].total * 100);
+    return aP - bP;
+  });
+  const actionItems = [
+    { icon: '1️⃣', title: 'This Week', desc: `Focus on <strong>${sorted[0][0]}</strong> — your biggest opportunity area. Spend 30 minutes researching one AI tool that addresses this skill gap. The compound effect of closing your weakest area first is significant.` },
+    { icon: '2️⃣', title: 'This Month', desc: `Build a structured practice routine: apply AI to one real work task per day in your gap areas (${sorted[0][0]}, ${sorted.length > 1 ? sorted[1][0] : 'ROI-First AI'}). Track time saved and quality improvements.` },
+    { icon: '3️⃣', title: 'This Quarter', desc: `Consider formal training to accelerate your growth. The <a href="https://4daycourse.netlify.app" target="_blank" style="color:var(--babson-green);font-weight:600">4-Day AI Skills Intensive</a> covers all 6 categories with hands-on exercises and is designed for professionals at your level.` }
+  ];
+  actionItems.forEach(item => {
+    tH += `<div class="tip-card"><h4>${item.icon} ${item.title}</h4><p>${item.desc}</p></div>`;
+  });
+  tA.innerHTML = tH;
+
+  // Show content, hide loading
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('reportContent').style.display = 'block';
+
+  // Scroll-triggered reveals are handled by Intersection Observer (initScrollRevealAnimations)
+  // REMOVED batch setTimeout that was overriding scroll triggers (Best Practice #22)
+}
+
+// ──── PDF GENERATION (via Netlify Function) ────
+async function downloadPDFFromFunction() {
+  const data = getReportData();
+  if (!data) {
+    alert('Report data not found. Please refresh the page.');
+    return;
+  }
+
+  // Show loading state
+  document.getElementById('pdfButton').style.display = 'none';
+  document.getElementById('pdfLoadingState').style.display = 'block';
+
+  try {
+    // Encode quiz data as base64
+    const json = JSON.stringify(data);
+    const base64Data = btoa(json);
+
+    // Call Netlify Function
+    const response = await fetch('/.netlify/functions/generate-pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: base64Data })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}`);
+    }
+
+    // Get PDF blob
+    const blob = await response.blob();
+
+    // Create download link
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `AI_Skills_IQ_Report_${data.firstName}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    // Hide loading, show button again
+    document.getElementById('pdfLoadingState').style.display = 'none';
+    document.getElementById('pdfButton').style.display = 'inline-flex';
+
+  } catch (error) {
+    console.error('PDF download failed:', error);
+    alert('Failed to generate PDF. Please try again.');
+
+    // Hide loading, show button again
+    document.getElementById('pdfLoadingState').style.display = 'none';
+    document.getElementById('pdfButton').style.display = 'inline-flex';
+  }
+}
+
+// ──── LEGACY: PDF GENERATION (jsPDF - kept for reference) ----
+// This older version was replaced by ReportLab-based Netlify Function
+function downloadPDFLegacy() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const data = getReportData();
+  if (!data) return;
+
+  const { firstName, industry, score, cats, totalCorrect, totalQuestions } = data;
+  const pageW = 210, margin = 20;
+  let y = 20;
+
+  // Header bar
+  doc.setFillColor(0, 102, 68);
+  doc.rect(0, 0, pageW, 40, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.text(`AI Skills IQ Report`, margin, 18);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Prepared for ${firstName} | ${new Date().toLocaleDateString()}`, margin, 28);
+  doc.text(`${industry || 'Professional'} | Score: ${score}%`, margin, 35);
+
+  y = 52;
+  doc.setTextColor(27, 67, 50);
+
+  // Overall score
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.text(`Overall Score: ${score}% (${totalCorrect}/${totalQuestions} correct)`, margin, y);
+  y += 10;
+
+  // Category breakdown
+  doc.setFontSize(12);
+  doc.text('Category Breakdown', margin, y);
+  y += 8;
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+
+  Object.entries(cats).forEach(([cat, d]) => {
+    const cp = Math.round(d.correct / d.total * 100);
+    const level = cp >= 80 ? 'Strength' : cp >= 50 ? 'Average' : 'Gap';
+    // Bar background
+    doc.setFillColor(230, 230, 230);
+    doc.rect(margin, y - 3, 170, 7, 'F');
+    // Bar fill
+    if (cp >= 80) doc.setFillColor(39, 174, 96);
+    else if (cp >= 50) doc.setFillColor(238, 175, 0);
+    else doc.setFillColor(192, 57, 43);
+    doc.rect(margin, y - 3, 170 * (cp / 100), 7, 'F');
+    // Label
+    doc.setTextColor(45, 55, 72);
+    doc.text(`${cat}: ${cp}% (${level})`, margin, y + 10);
+    y += 16;
+  });
+
+  y += 4;
+
+  // Benchmark
+  const avg = INDUSTRY_BENCHMARKS[industry] || 50;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(27, 67, 50);
+  doc.text(`Industry Benchmark: You ${score >= avg ? 'are ' + (score - avg) + ' points above' : 'are ' + (avg - score) + ' points below'} the ${industry || 'professional'} average (${avg}%)`, margin, y);
+  y += 12;
+
+  // Personalized tips
+  doc.text('Your Recommended Next Steps', margin, y);
+  y += 8;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(74, 85, 104);
+
+  const sortedCats = Object.entries(cats).sort((a, b) => Math.round(a[1].correct / a[1].total * 100) - Math.round(b[1].correct / b[1].total * 100));
+
+  sortedCats.forEach(([cat, d]) => {
+    if (y > 260) { doc.addPage(); y = 20; }
+    const cp = Math.round(d.correct / d.total * 100);
+    const level = cp >= 80 ? 'strength' : cp >= 50 ? 'improve' : 'gap';
+    const tip = CATEGORY_TIPS[cat]?.[level] || '';
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(27, 67, 50);
+    doc.text(`${cat} (${cp}%):`, margin, y);
+    y += 5;
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(74, 85, 104);
+    const lines = doc.splitTextToSize(tip, 170);
+    doc.text(lines, margin, y);
+    y += lines.length * 4.5 + 6;
+  });
+
+  // Footer CTA
+  if (y > 250) { doc.addPage(); y = 20; }
+  y += 6;
+  doc.setFillColor(0, 102, 68);
+  doc.rect(margin - 4, y - 4, 178, 20, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.text('Ready to close your AI skills gap? Visit 4daycourse.netlify.app', margin, y + 8);
+
+  doc.save(`AI_Skills_IQ_Report_${firstName}.pdf`);
+}
+
+
+// ──── SCROLL-TRIGGERED REVEAL ANIMATIONS ────
+// Sections fade and slide in only as user scrolls to them
+function initScrollRevealAnimations() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      // When element enters viewport
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Optional: stop observing after visible (more efficient)
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.15, // Trigger when 15% of element is visible
+    rootMargin: '0px 0px -100px 0px' // Trigger a bit before reaching viewport
+  });
+
+  // Observe all .reveal elements
+  document.querySelectorAll('.reveal').forEach(el => {
+    observer.observe(el);
+  });
+}
+
+// ──── INIT ────
+// ──── SEND CONFIRMATION EMAIL (on paid visit) ────
+function sendConfirmationEmail(data) {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('paid') !== '1') return; // Only send on paid visits
+
+  const siteUrl = window.location.origin;
+  const reportUrl = window.location.href;
+
+  fetch('/.netlify/functions/send-email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      type: 'confirmation',
+      email: data.email,
+      data: { ...data, reportUrl }
+    })
+  }).then(r => {
+    if (r.ok) console.log('Confirmation email sent to', data.email);
+    else console.warn('Email send failed:', r.status);
+  }).catch(err => console.warn('Email error (non-blocking):', err));
+
+  // Also mark this lead as paid in Google Sheets via a simple endpoint
+  fetch('/.netlify/functions/mark-paid', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: data.email })
+  }).catch(() => {});
+}
+
+// ──── INIT ────
+document.addEventListener('DOMContentLoaded', () => {
+  const data = getReportData();
+  if (!data || !data.firstName) {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('errorState').style.display = 'block';
+    return;
+  }
+  // Small delay for loading feel
+  setTimeout(() => {
+    renderReport(data);
+    sendConfirmationEmail(data);
+    // Initialize scroll-triggered reveals
+    initScrollRevealAnimations();
+  }, 600);
+});
+</script>
+</body>
+</html>

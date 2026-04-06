@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your AI Skills IQ Report</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Merriweather', 'Georgia', serif;
+      background: linear-gradient(135deg, #0a1f15 0%, #0d2c1f 100%);
+      color: #1a3a2a;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Mesh gradient background animation */
+    @keyframes meshShift {
+      0% {
+        background: radial-gradient(ellipse at 20% 50%, rgba(238, 175, 0, 0.15) 0%, transparent 50%),
+                    radial-gradient(ellipse at 80% 80%, rgba(201, 168, 76, 0.1) 0%, transparent 50%);
+        background-position: 0% 0%, 100% 100%;
+      }
+      50% {
+        background: radial-gradient(ellipse at 30% 60%, rgba(238, 175, 0, 0.15) 0%, transparent 50%),
+                    radial-gradient(ellipse at 70% 70%, rgba(201, 168, 76, 0.1) 0%, transparent 50%);
+        background-position: 50% 50%, 50% 50%;
+      }
+      100% {
+        background: radial-gradient(ellipse at 20% 50%, rgba(238, 175, 0, 0.15) 0%, transparent 50%),
+                    radial-gradient(ellipse at 80% 80%, rgba(201, 168, 76, 0.1) 0%, transparent 50%);
+        background-position: 0% 0%, 100% 100%;
+      }
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      animation: meshShift 15s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Film grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise" seed="2"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.015"/></svg>');
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 20px;
+    }
+
+    /* Header Section */
+    .header {
+      text-align: center;
+      margin-bottom: 60px;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(201, 168, 76, 0.2);
+      color: #C9A84C;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(201, 168, 76, 0.3);
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #ffffff 0%, #C9A84C 25%, #EEAF00 50%, #C9A84C 75%, #ffffff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmerText 4s linear infinite;
+    }
+
+    @keyframes shimmerText {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-style: italic;
+      margin-bottom: 30px;
+    }
+
+    /* Score Ring Section */
+    .score-section {
+      text-align: center;
+      margin-bottom: 80px;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.2s forwards;
+    }
+
+    .score-ring-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-ring-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 0 30px rgba(201, 168, 76, 0.3));
+    }
+
+    .score-display {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .score-number {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #C9A84C;
+      line-height: 1;
+    }
+
+    .score-label {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 2px;
+      margin-top: 5px;
+    }
+
+    .score-context {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 20px;
+    }
+
+    /* Category Breakdown */
+    .breakdown-section {
+      margin-bottom: 80px;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 30px;
+      color: #ffffff;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out 0.3s forwards;
+    }
+
+    .breakdown-grid {
+      display: grid;
+      gap: 20px;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out 0.4s forwards;
+    }
+
+    .breakdown-row {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(10, 31, 21, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      opacity: 0;
+      animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .breakdown-row:nth-child(1) { animation-delay: 0.5s; }
+    .breakdown-row:nth-child(2) { animation-delay: 0.6s; }
+    .breakdown-row:nth-child(3) { animation-delay: 0.7s; }
+    .breakdown-row:nth-child(4) { animation-delay: 0.8s; }
+    .breakdown-row:nth-child(5) { animation-delay: 0.9s; }
+    .breakdown-row:nth-child(6) { animation-delay: 1.0s; }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .category-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #0a1f15;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .category-score {
+      font-weight: 700;
+      color: #C9A84C;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(10, 31, 21, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0a8659 0%, #1db884 100%);
+      border-radius: 4px;
+      animation: fillBar 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+    }
+
+    .breakdown-row:nth-child(1) .progress-fill { animation-delay: 0.5s; width: 85%; }
+    .breakdown-row:nth-child(2) .progress-fill { animation-delay: 0.6s; width: 72%; }
+    .breakdown-row:nth-child(3) .progress-fill { animation-delay: 0.7s; width: 68%; }
+    .breakdown-row:nth-child(4) .progress-fill { animation-delay: 0.8s; width: 92%; }
+    .breakdown-row:nth-child(5) .progress-fill { animation-delay: 0.9s; width: 75%; }
+    .breakdown-row:nth-child(6) .progress-fill { animation-delay: 1.0s; width: 80%; }
+
+    @keyframes fillBar {
+      from {
+        opacity: 1;
+        width: 0%;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Radar Chart */
+    .radar-section {
+      margin-bottom: 80px;
+      text-align: center;
+    }
+
+    .radar-container {
+      width: 100%;
+      max-width: 400px;
+      margin: 40px auto;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.6s forwards;
+    }
+
+    .radar-svg {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 0 20px rgba(201, 168, 76, 0.2));
+    }
+
+    /* Insights Cards */
+    .insights-section {
+      margin-bottom: 80px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .insight-card {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      padding: 30px;
+      border-radius: 12px;
+      border: 1px solid rgba(10, 31, 21, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      opacity: 0;
+      animation: fadeUp 0.6s ease-out forwards;
+    }
+
+    .insight-card:nth-child(1) { animation-delay: 0.8s; }
+    .insight-card:nth-child(2) { animation-delay: 0.9s; }
+    .insight-card:nth-child(3) { animation-delay: 1.0s; }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .insight-icon {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+
+    .insight-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #0a1f15;
+      margin-bottom: 10px;
+    }
+
+    .insight-text {
+      font-size: 0.95rem;
+      color: #4a5f55;
+      line-height: 1.6;
+    }
+
+    /* Action Plan */
+    .action-section {
+      margin-bottom: 80px;
+    }
+
+    .action-steps {
+      display: grid;
+      gap: 20px;
+    }
+
+    .action-step {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      padding: 30px;
+      border-radius: 12px;
+      border-left: 4px solid #C9A84C;
+      border: 1px solid rgba(10, 31, 21, 0.1);
+      border-left: 4px solid #C9A84C;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      opacity: 0;
+      animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .action-step:nth-child(1) { animation-delay: 1.1s; }
+    .action-step:nth-child(2) { animation-delay: 1.2s; }
+    .action-step:nth-child(3) { animation-delay: 1.3s; }
+
+    .step-number {
+      display: inline-block;
+      background: #C9A84C;
+      color: #0a1f15;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 40px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .step-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #0a1f15;
+      margin-bottom: 10px;
+    }
+
+    .step-description {
+      font-size: 0.95rem;
+      color: #4a5f55;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .step-roi {
+      font-size: 0.85rem;
+      color: #0a8659;
+      font-weight: 600;
+    }
+
+    /* Benchmark Section */
+    .benchmark-section {
+      margin-bottom: 80px;
+      text-align: center;
+    }
+
+    .benchmark-comparison {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      padding: 40px;
+      border-radius: 12px;
+      border: 1px solid rgba(10, 31, 21, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 1.4s forwards;
+    }
+
+    .benchmark-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #0a1f15;
+      margin-bottom: 30px;
+    }
+
+    .benchmark-bar {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .benchmark-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #0a1f15;
+      margin-bottom: 8px;
+    }
+
+    .benchmark-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #C9A84C;
+    }
+
+    /* CTA Button */
+    .cta-section {
+      text-align: center;
+      margin-top: 60px;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 1.5s forwards;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #0a8659 0%, #1db884 100%);
+      color: #ffffff;
+      padding: 16px 40px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 8px 24px rgba(10, 134, 89, 0.3);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(10, 134, 89, 0.4);
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .container {
+        padding: 40px 16px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .insights-section {
+        grid-template-columns: 1fr;
+      }
+
+      .score-ring-container {
+        width: 150px;
+        height: 150px;
+      }
+
+      .score-number {
+        font-size: 2rem;
+      }
+    }
+
+    /* Confetti particles */
+    .confetti {
+      position: fixed;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confettiCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 998;"></canvas>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="badge">PERSONALIZED AI SKILLS ASSESSMENT</div>
+      <h1>Your AI Skills IQ Report</h1>
+      <p class="subtitle">Assessed across 6 competency domains · 12 scenario-based questions</p>
+    </div>
+
+    <!-- Score Ring -->
+    <div class="score-section">
+      <div class="score-ring-container">
+        <svg class="score-ring-svg" viewBox="0 0 200 200">
+          <!-- Background circle -->
+          <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"/>
+
+          <!-- Peer average ring (gold) -->
+          <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(201,168,76,0.3)" stroke-width="4" stroke-dasharray="283" stroke-dashoffset="42" style="transform-origin: center; transform: rotate(-90deg);"/>
+
+          <!-- User score ring (green) with animation -->
+          <circle cx="100" cy="100" r="80" fill="none" stroke="url(#scoreGradient)" stroke-width="6" stroke-dasharray="251" stroke-dashoffset="0" style="transform-origin: center; transform: rotate(-90deg); animation: scoreRingDraw 1.5s ease-out forwards;"/>
+
+          <!-- Gradient definition -->
+          <defs>
+            <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#0a8659;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#1db884;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="score-display">
+          <div class="score-number" id="scoreValue">78</div>
+          <div class="score-label">AI SKILLS IQ</div>
+        </div>
+      </div>
+      <p class="score-context">Your score is <strong>above average</strong> • Peer average: 58%</p>
+    </div>
+
+    <!-- Category Breakdown -->
+    <div class="breakdown-section">
+      <h2 class="section-title">Your Performance by Category</h2>
+      <div class="breakdown-grid">
+        <div class="breakdown-row">
+          <div class="category-name">
+            <span>AI Fundamentals</span>
+            <span class="category-score">85%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+        </div>
+        <div class="breakdown-row">
+          <div class="category-name">
+            <span>AI Tools & Productivity</span>
+            <span class="category-score">72%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+        </div>
+        <div class="breakdown-row">
+          <div class="category-name">
+            <span>AI Strategy & Business</span>
+            <span class="category-score">68%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+        </div>
+        <div class="breakdown-row">
+          <div class="category-name">
+            <span>AI Skills Gap Awareness</span>
+            <span class="category-score">92%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+        </div>
+        <div class="breakdown-row">
+          <div class="category-name">
+            <span>AI Workflow Integration</span>
+            <span class="category-score">75%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+        </div>
+        <div class="breakdown-row">
+          <div class="category-name">
+            <span>AI Communication & Persuasion</span>
+            <span class="category-score">80%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Radar Chart -->
+    <div class="radar-section">
+      <h2 class="section-title">Competency Profile</h2>
+      <div class="radar-container">
+        <svg class="radar-svg" viewBox="0 0 300 300">
+          <defs>
+            <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#0a8659;stop-opacity:0.4" />
+              <stop offset="100%" style="stop-color:#1db884;stop-opacity:0.1" />
+            </linearGradient>
+          </defs>
+
+          <!-- Grid circles -->
+          <circle cx="150" cy="150" r="120" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+          <circle cx="150" cy="150" r="80" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+          <circle cx="150" cy="150" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+
+          <!-- Axis lines -->
+          <line x1="150" y1="30" x2="150" y2="270" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+          <line x1="30" y1="150" x2="270" y2="150" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+          <line x1="55" y1="55" x2="245" y2="245" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+          <line x1="245" y1="55" x2="55" y2="245" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+
+          <!-- Data polygon with animation -->
+          <polygon points="150,42 212,76 228,150 194,212 106,212 66,150"
+                   fill="url(#radarGradient)" stroke="#1db884" stroke-width="2" opacity="0"
+                   style="animation: radarDraw 1.5s ease-out 1.2s forwards;"/>
+
+          <!-- Data points -->
+          <circle cx="150" cy="42" r="4" fill="#0a8659" opacity="0" style="animation: fadeIn 0.5s ease-out 1.5s forwards;"/>
+          <circle cx="212" cy="76" r="4" fill="#0a8659" opacity="0" style="animation: fadeIn 0.5s ease-out 1.6s forwards;"/>
+          <circle cx="228" cy="150" r="4" fill="#0a8659" opacity="0" style="animation: fadeIn 0.5s ease-out 1.7s forwards;"/>
+          <circle cx="194" cy="212" r="4" fill="#0a8659" opacity="0" style="animation: fadeIn 0.5s ease-out 1.8s forwards;"/>
+          <circle cx="106" cy="212" r="4" fill="#0a8659" opacity="0" style="animation: fadeIn 0.5s ease-out 1.9s forwards;"/>
+          <circle cx="66" cy="150" r="4" fill="#0a8659" opacity="0" style="animation: fadeIn 0.5s ease-out 2.0s forwards;"/>
+
+          <!-- Labels -->
+          <text x="150" y="20" text-anchor="middle" fill="#ffffff" font-size="12" opacity="0.7">Fundamentals</text>
+          <text x="240" y="80" text-anchor="start" fill="#ffffff" font-size="12" opacity="0.7">Tools</text>
+          <text x="250" y="155" text-anchor="start" fill="#ffffff" font-size="12" opacity="0.7">Strategy</text>
+          <text x="200" y="240" text-anchor="middle" fill="#ffffff" font-size="12" opacity="0.7">Awareness</text>
+          <text x="50" y="240" text-anchor="middle" fill="#ffffff" font-size="12" opacity="0.7">Integration</text>
+          <text x="20" y="155" text-anchor="end" fill="#ffffff" font-size="12" opacity="0.7">Communication</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Insights -->
+    <div class="insights-section">
+      <div class="insight-card">
+        <div class="insight-icon">💪</div>
+        <div class="insight-title">Your Strength</div>
+        <div class="insight-text">You excel at understanding AI fundamentals and have strong awareness of your own skill gaps—a key driver of continuous growth.</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">🎯</div>
+        <div class="insight-title">Top Opportunity</div>
+        <div class="insight-text">AI Strategy & Business applications show the most room for growth. This is where you can create the most immediate business impact.</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">⚡</div>
+        <div class="insight-title">Quick Win</div>
+        <div class="insight-text">Deepening your AI Tools mastery (ChatGPT, Copilot, etc.) will immediately improve your workflow efficiency by 15-20%.</div>
+      </div>
+    </div>
+
+    <!-- Action Plan -->
+    <div class="action-section">
+      <h2 class="section-title">Your 3-Step Action Plan</h2>
+      <div class="action-steps">
+        <div class="action-step">
+          <div class="step-number">1</div>
+          <div class="step-title">Master Practical Tools (Week 1-2)</div>
+          <div class="step-description">Spend 90 minutes/day on hands-on practice with ChatGPT, Copilot, and Claude. Focus on prompt engineering and workflow integration.</div>
+          <div class="step-roi">Expected ROI: +8-10% productivity lift</div>
+        </div>
+        <div class="action-step">
+          <div class="step-number">2</div>
+          <div class="step-title">Build Strategic Thinking (Week 3-4)</div>
+          <div class="step-description">Study 3-5 case studies of AI implementation in your industry. Focus on business outcomes, not just technology features.</div>
+          <div class="step-roi">Expected ROI: Competitive advantage in strategy discussions</div>
+        </div>
+        <div class="action-step">
+          <div class="step-number">3</div>
+          <div class="step-title">Apply & Measure (Week 5+)</div>
+          <div class="step-description">Implement one AI tool or workflow in your current role. Measure time saved, quality improvements, or revenue impact over 30 days.</div>
+          <div class="step-roi">Expected ROI: Proof point for promotion/salary negotiation</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benchmark -->
+    <div class="benchmark-section">
+      <div class="benchmark-comparison">
+        <h2 class="benchmark-title">How You Compare</h2>
+        <div class="benchmark-bar">
+          <div class="benchmark-label">Your Score</div>
+          <div class="benchmark-value">78% (Top 35%)</div>
+        </div>
+        <div class="benchmark-bar">
+          <div class="benchmark-label">Industry Average</div>
+          <div class="benchmark-value">58%</div>
+        </div>
+        <div class="benchmark-bar">
+          <div class="benchmark-label">Top Performers</div>
+          <div class="benchmark-value">85%+</div>
+        </div>
+        <p style="margin-top: 20px; font-size: 0.95rem; color: #4a5f55;">You're in the top 35% of 12,000+ professionals assessed. Only 12% score 85%+ on this assessment.</p>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section">
+      <h2 class="section-title">Next Steps</h2>
+      <p style="font-size: 1rem; color: rgba(255,255,255,0.8); margin-bottom: 30px; max-width: 500px; margin-left: auto; margin-right: auto;">
+        Your personalized action plan is ready. Start with Step 1 this week to accelerate your AI skills and career trajectory.
+      </p>
+      <button class="cta-button">Start My Action Plan →</button>
+    </div>
+  </div>
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes scoreRingDraw {
+      from {
+        stroke-dashoffset: 251;
+      }
+      to {
+        stroke-dashoffset: 37; /* 251 * (1 - 0.78) ≈ 55, but adjust for visual effect */
+      }
+    }
+
+    @keyframes radarDraw {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+
+  <script>
+    // Confetti particles
+    class Confetti {
+      constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.particles = [];
+        this.animationId = null;
+
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+          this.canvas.width = window.innerWidth;
+          this.canvas.height = window.innerHeight;
+        });
+      }
+
+      burst() {
+        const colors = ['#0a8659', '#1db884', '#C9A84C', '#EEAF00'];
+        const x = this.canvas.width / 2;
+        const y = this.canvas.height * 0.3;
+
+        for (let i = 0; i < 50; i++) {
+          this.particles.push({
+            x: x,
+            y: y,
+            vx: (Math.random() - 0.5) * 12,
+            vy: (Math.random() - 0.5) * 12 - 2,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            size: Math.random() * 4 + 2,
+            life: 1,
+            decay: Math.random() * 0.015 + 0.01
+          });
+        }
+
+        this.animate();
+      }
+
+      animate() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        this.particles = this.particles.filter(p => p.life > 0);
+
+        this.particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.2; // gravity
+          p.life -= p.decay;
+
+          this.ctx.fillStyle = p.color;
+          this.ctx.globalAlpha = p.life;
+          this.ctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+
+        this.ctx.globalAlpha = 1;
+
+        if (this.particles.length > 0) {
+          this.animationId = requestAnimationFrame(() => this.animate());
+        }
+      }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      const canvas = document.getElementById('confettiCanvas');
+      const confetti = new Confetti(canvas);
+      confetti.burst();
+    });
+  </script>
+</body>
+</html>

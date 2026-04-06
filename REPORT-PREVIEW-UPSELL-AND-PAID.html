@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Upsell & Paid Report Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f5f5f5;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #0A1F15 0%, #1B4332 100%);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .header h1 { font-size: 2rem; margin-bottom: 8px; }
+    .header p { font-size: 0.95rem; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+
+    .section {
+      background: white;
+      border-radius: 8px;
+      padding: 40px;
+      margin-bottom: 40px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .section h2 {
+      font-family: 'Merriweather', serif;
+      font-size: 1.8rem;
+      color: #0A1F15;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 3px solid #C9A84C;
+    }
+
+    .section-note {
+      background: #fff3cd;
+      border-left: 4px solid #C9A84C;
+      padding: 15px;
+      margin-bottom: 30px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: #663c00;
+    }
+
+    /* UPSELL SECTION STYLES */
+    .upsell-demo {
+      background: linear-gradient(165deg, #005172 0%, #006644 50%, #0A3A25 100%);
+      color: white;
+      padding: 60px 40px;
+      border-radius: 12px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upsell-demo::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(238,175,0,.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .upsell-demo-inner { position: relative; z-index: 1; }
+
+    .upsell-badge {
+      display: inline-block;
+      background: rgba(238,175,0,.2);
+      border: 1px solid rgba(238,175,0,.4);
+      color: #DDD055;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 8px 20px;
+      border-radius: 24px;
+      margin-bottom: 24px;
+    }
+
+    .upsell-headline {
+      font-family: 'Merriweather', serif;
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+      line-height: 1.3;
+      color: white;
+    }
+
+    .upsell-sub {
+      color: rgba(255,255,255,.75);
+      font-size: 0.95rem;
+      margin-bottom: 32px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.65;
+    }
+
+    .features-box {
+      background: rgba(255,255,255,.07);
+      border: 1.5px solid rgba(238,175,0,.3);
+      border-radius: 12px;
+      padding: 28px 32px;
+      max-width: 500px;
+      margin: 0 auto 28px;
+      text-align: left;
+    }
+
+    .feature {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 0.87rem;
+      color: rgba(255,255,255,.92);
+      margin-bottom: 14px;
+    }
+
+    .feature:last-child { margin-bottom: 0; }
+
+    .feature-check { flex-shrink: 0; color: #DDD055; font-size: 1rem; }
+
+    .testimonial {
+      background: rgba(255,255,255,.05);
+      border-left: 3px solid #C9A84C;
+      padding: 20px;
+      margin: 24px 0;
+      border-radius: 8px;
+      font-style: italic;
+      color: rgba(255,255,255,.95);
+    }
+
+    .testimonial-author { font-style: normal; font-weight: 600; color: #DDD055; font-size: 0.85rem; margin-top: 8px; }
+
+    .social-proof {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,.6);
+      margin: 20px 0;
+    }
+
+    .live-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #27AE60;
+      border-radius: 50%;
+      margin-right: 6px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .guarantee {
+      background: rgba(255,255,255,.08);
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,.8);
+      margin: 20px 0;
+    }
+
+    .price-section {
+      margin: 32px 0;
+      padding: 24px;
+      background: rgba(0,0,0,.2);
+      border-radius: 8px;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .price-original {
+      text-decoration: line-through;
+      color: rgba(255,255,255,.6);
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .price-current {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #DDD055;
+      font-family: 'Merriweather', serif;
+    }
+
+    .price-message {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,.7);
+      margin-top: 8px;
+    }
+
+    .countdown {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.6);
+      letter-spacing: 0.05em;
+      margin-top: 8px;
+    }
+
+    .countdown-timer {
+      display: block;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #DDD055;
+      margin-top: 4px;
+    }
+
+    .cta-button {
+      background: linear-gradient(135deg, #C9A84C 0%, #DDD055 100%);
+      color: #0A1F15;
+      border: none;
+      padding: 16px 32px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 20px 0;
+      width: 100%;
+      max-width: 360px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(201, 168, 76, 0.3);
+    }
+
+    .cta-security {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,.6);
+      margin-top: 12px;
+    }
+
+    .unity-statement {
+      color: rgba(255,255,255,.85);
+      font-size: 0.9rem;
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+
+    .unity-statement strong { color: white; }
+
+    .skip-button {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,.4);
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: color 0.2s;
+    }
+
+    .skip-button:hover { color: rgba(255,255,255,.6); }
+
+    /* PAID REPORT STYLES */
+    .report-section {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+
+    .report-header {
+      background: linear-gradient(165deg, #005172 0%, #006644 50%, #0A1F15 100%);
+      color: white;
+      padding: 60px 40px 40px;
+      text-align: center;
+      border-radius: 12px;
+      margin-bottom: 32px;
+    }
+
+    .report-badge {
+      display: inline-block;
+      background: rgba(238,175,0,.2);
+      border: 1px solid rgba(238,175,0,.4);
+      color: #DDD055;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 24px;
+      margin-bottom: 16px;
+    }
+
+    .report-title {
+      font-family: 'Merriweather', serif;
+      font-size: 2rem;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .report-subtitle {
+      color: rgba(255,255,255,.7);
+      font-size: 0.95rem;
+    }
+
+    .score-hero {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      padding: 40px 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .score-ring {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      border: 6px solid #C9A84C;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      flex-shrink: 0;
+      box-shadow: 0 0 30px rgba(201, 168, 76, 0.2);
+    }
+
+    .score-pct {
+      font-family: 'Merriweather', serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: #0A1F15;
+    }
+
+    .score-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #718096;
+      margin-top: 4px;
+    }
+
+    .score-summary {
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .score-summary h3 {
+      font-family: 'Merriweather', serif;
+      font-size: 1.3rem;
+      color: #0A1F15;
+      margin-bottom: 12px;
+    }
+
+    .score-summary p {
+      color: #555;
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+
+    .glass-card {
+      background: rgba(255,255,255,.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0,100,68,.1);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-family: 'Merriweather', serif;
+      font-size: 1.15rem;
+      color: #0A1F15;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title .icon { font-size: 1.3rem; }
+
+    .breakdown-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .breakdown-cat {
+      flex: 0 0 180px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #2D3748;
+      text-align: right;
+    }
+
+    .breakdown-bar {
+      flex: 1;
+      height: 18px;
+      background: rgba(0,0,0,.06);
+      border-radius: 9px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .breakdown-bar-fill {
+      height: 100%;
+      border-radius: 9px;
+      background: linear-gradient(90deg, #0A5C38, #1B4332);
+      position: relative;
+    }
+
+    .breakdown-score {
+      flex: 0 0 44px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-align: center;
+      color: #0A1F15;
+    }
+
+    .insight-row {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      background: rgba(0,0,0,.02);
+      border-left: 4px solid transparent;
+    }
+
+    .insight-row.strength { border-left-color: #27AE60; background: rgba(39,174,96,.04); }
+    .insight-row.improve { border-left-color: #EEAF00; background: rgba(238,175,0,.04); }
+    .insight-row.gap { border-left-color: #C0392B; background: rgba(192,57,43,.04); }
+
+    .insight-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+
+    .insight-content h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #0A1F15;
+      margin-bottom: 4px;
+    }
+
+    .insight-content p {
+      font-size: 0.85rem;
+      color: #555;
+      line-height: 1.55;
+    }
+
+    .tip-card {
+      background: linear-gradient(135deg, rgba(0,100,68,.04), rgba(54,127,128,.04));
+      border: 1px solid rgba(0,100,68,.12);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .tip-card h4 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #0A1F15;
+      margin-bottom: 6px;
+    }
+
+    .tip-card p {
+      font-size: 0.82rem;
+      color: #555;
+      line-height: 1.55;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #fff9f0, #f5f5f5);
+      border: 1px solid #e0d5c8;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: 'Merriweather', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #0A1F15;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #666;
+      margin-top: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #ddd, transparent);
+      margin: 32px 0;
+    }
+
+    @media (max-width: 768px) {
+      .upsell-demo { padding: 40px 24px; }
+      .score-hero { gap: 16px; }
+      .score-ring { width: 120px; height: 120px; }
+      .section { padding: 24px; }
+      .report-header { padding: 40px 24px 30px; }
+      .report-title { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Practical AI IQ Quiz - User Experience Preview</h1>
+  <p>What users see at each stage: (1) Upsell/Motivation Section After Quiz Score, and (2) Paid HTML Report After Payment</p>
+</div>
+
+<div class="container">
+
+  <!-- ═════════════════════════════════════════ -->
+  <!-- STAGE 1: UPSELL SECTION                    -->
+  <!-- ═════════════════════════════════════════ -->
+  <div class="section">
+    <h2>📊 Stage 1: What Users See After Quiz Score</h2>
+    <div class="section-note">
+      <strong>Context:</strong> User just completed the 12-question quiz and saw their score. This upsell section appears below the score display and motivates them to pay $1 for the full report. Uses all 7 Cialdini persuasion principles (scarcity, reciprocity, authority, social proof, liking, consistency, unity).
+    </div>
+
+    <!-- UPSELL DEMO -->
+    <div class="upsell-demo">
+      <div class="upsell-demo-inner">
+
+        <div class="upsell-badge">⏱ Session-Only Price — Expires Below</div>
+
+        <h2 class="upsell-headline">Unlock Your Complete AI Skills IQ Report</h2>
+        <p class="upsell-sub">Your personalized analysis with exact scores, ranked gaps, and a specific action plan — delivered to your inbox in seconds.</p>
+
+        <div class="features-box">
+          <div class="feature">
+            <span class="feature-check">✦</span>
+            <span><strong>Your exact percentile ranking</strong> vs. 12,000+ professionals</span>
+          </div>
+          <div class="feature">
+            <span class="feature-check">✦</span>
+            <span><strong>Strengths, gaps, and priorities</strong> — ranked by impact on your score</span>
+          </div>
+          <div class="feature">
+            <span class="feature-check">✦</span>
+            <span><strong>Specific 3-step action plan</strong> tailored to your exact skill profile</span>
+          </div>
+          <div class="feature">
+            <span class="feature-check">✦</span>
+            <span><strong>How to use your score</strong> in salary negotiations and job interviews</span>
+          </div>
+          <div class="feature">
+            <span class="feature-check">✦</span>
+            <span><strong>Industry benchmark</strong> — where your score ranks in your field</span>
+          </div>
+        </div>
+
+        <div class="testimonial">
+          "I've spent thousands on AI courses. This $1 report told me more about my specific gaps than any of them. The ROI is absurd."
+          <div class="testimonial-author">— James R., Director of Strategy, Healthcare · Scored 58%</div>
+        </div>
+
+        <div class="social-proof">
+          <span class="live-dot"></span><strong>2,847</strong> professionals unlocked their report this month
+        </div>
+
+        <div class="guarantee">✓ 30-Day Money-Back Guarantee — No questions asked</div>
+
+        <div class="price-section">
+          <div class="price-row">
+            <div class="price-original">$9.99</div>
+            <div class="price-current">$1<span>.00</span></div>
+          </div>
+          <p class="price-message">90% off — available only during this session</p>
+          <div class="countdown">
+            Offer expires in
+            <span class="countdown-timer">5:00</span>
+          </div>
+        </div>
+
+        <button class="cta-button">Get My Full Report for $1.00 →</button>
+        <p class="cta-security">🔒 Secure checkout via Stripe · Instant email delivery</p>
+
+        <p class="unity-statement">
+          You already know most professionals <strong>won't act on what they just learned.</strong><br>
+          The report is for the ones who will.
+        </p>
+
+        <button class="skip-button">No thanks, I'll skip my detailed report</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════ -->
+  <!-- STAGE 2: PAID REPORT                       -->
+  <!-- ═════════════════════════════════════════ -->
+  <div class="section">
+    <h2>📄 Stage 2: What Users See After Paying ($1 Report)</h2>
+    <div class="section-note">
+      <strong>What happens:</strong> After payment, user is redirected to <code>enhanced-report.html?data={encoded_quiz_data}&paid=1</code>. This page displays their personalized report with score breakdown, category analysis, actionable insights, and specific recommendations.
+    </div>
+
+    <!-- REPORT HEADER -->
+    <div class="report-header">
+      <div class="report-badge">PERSONALIZED AI SKILLS ASSESSMENT</div>
+      <h1 class="report-title">Your <span style="color: #DDD055;">AI Skills IQ</span> Report</h1>
+      <p class="report-subtitle">Assessed across 6 competency domains · 12 scenario-based questions</p>
+    </div>
+
+    <!-- SCORE DISPLAY -->
+    <div class="report-section">
+      <div class="score-hero">
+        <div class="score-ring">
+          <div class="score-pct">78%</div>
+          <div class="score-label">AI SKILLS IQ</div>
+        </div>
+        <div class="score-summary">
+          <h3>You're in the upper tier</h3>
+          <p>Your command of practical AI tools and workflow integration puts you ahead of most professionals. You understand not just what AI can do, but how to use it strategically. Your report shows exactly how to stay there — with a ranked action plan personalized to your 78% score.</p>
+        </div>
+      </div>
+
+      <div style="text-align: center; font-size: 0.9rem; color: #666; margin: 20px 0;">
+        ⏐ Peer avg: 58% ⏐
+      </div>
+    </div>
+
+    <!-- CATEGORY BREAKDOWN -->
+    <div class="report-section">
+      <h3 class="section-title"><span class="icon">📊</span>Your Category Breakdown</h3>
+
+      <div class="breakdown-row">
+        <div class="breakdown-cat">AI Fundamentals</div>
+        <div class="breakdown-bar"><div class="breakdown-bar-fill" style="width: 100%"></div></div>
+        <div class="breakdown-score" style="color: #27AE60;">100%</div>
+      </div>
+
+      <div class="breakdown-row">
+        <div class="breakdown-cat">AI Tools & Productivity</div>
+        <div class="breakdown-bar"><div class="breakdown-bar-fill" style="width: 67%"></div></div>
+        <div class="breakdown-score" style="color: #EEAF00;">67%</div>
+      </div>
+
+      <div class="breakdown-row">
+        <div class="breakdown-cat">AI Strategy & Business</div>
+        <div class="breakdown-bar"><div class="breakdown-bar-fill" style="width: 100%"></div></div>
+        <div class="breakdown-score" style="color: #27AE60;">100%</div>
+      </div>
+
+      <div class="breakdown-row">
+        <div class="breakdown-cat">AI Skills Gap Awareness</div>
+        <div class="breakdown-bar"><div class="breakdown-bar-fill" style="width: 50%"></div></div>
+        <div class="breakdown-score" style="color: #EEAF00;">50%</div>
+      </div>
+
+      <div class="breakdown-row">
+        <div class="breakdown-cat">AI Workflow Integration</div>
+        <div class="breakdown-bar"><div class="breakdown-bar-fill" style="width: 100%"></div></div>
+        <div class="breakdown-score" style="color: #27AE60;">100%</div>
+      </div>
+
+      <div class="breakdown-row">
+        <div class="breakdown-cat">AI Communication & Persuasion</div>
+        <div class="breakdown-bar"><div class="breakdown-bar-fill" style="width: 0%"></div></div>
+        <div class="breakdown-score" style="color: #C0392B;">0%</div>
+      </div>
+    </div>
+
+    <!-- KEY INSIGHTS -->
+    <div class="report-section">
+      <h3 class="section-title"><span class="icon">💡</span>Your Key Insights</h3>
+
+      <div class="insight-row strength">
+        <div class="insight-icon">✓</div>
+        <div class="insight-content">
+          <h4>Strength: Strategic AI Integration</h4>
+          <p>You understand how AI impacts business workflows and competitive positioning. This is rare — most professionals see AI as a tool, not a strategic capability.</p>
+        </div>
+      </div>
+
+      <div class="insight-row improve">
+        <div class="insight-icon">→</div>
+        <div class="insight-content">
+          <h4>Opportunity: AI Communication Skills</h4>
+          <p>Your lowest area (0%) is explaining AI capabilities to non-technical stakeholders. This skill compounds your value in leadership contexts.</p>
+        </div>
+      </div>
+
+      <div class="insight-row gap">
+        <div class="insight-icon">⚡</div>
+        <div class="insight-content">
+          <h4>Your Highest-Impact Gap: AI Tools Proficiency</h4>
+          <p>At 67%, you understand tools conceptually but lack hands-on expertise with practical applications. 3-4 hours of hands-on practice in ChatGPT, Claude, and prompt engineering would move you to 85%+.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- WHY THIS MATTERS -->
+    <div class="report-section">
+      <div style="background: linear-gradient(135deg, rgba(10,31,21,.04), rgba(201,168,76,.04)); border-left: 4px solid #C9A84C; padding: 24px; border-radius: 8px; margin-bottom: 24px;">
+        <h4 style="color: #0A1F15; margin-bottom: 12px;">⚡ Your Edge Is Real — But AI Evolves Weekly</h4>
+        <p style="color: #555; line-height: 1.6; font-size: 0.95rem;">
+          You're ahead of the curve — but <strong>AI fluency is now a baseline expectation</strong>, not a differentiator. PwC's 2025 AI Jobs Barometer shows the <strong>56% wage premium</strong> for AI-skilled workers keeps compounding. The professionals who maintain their edge are the ones who systematically identify emerging gaps before they become liabilities. Your detailed report shows exactly where to focus next.
+        </p>
+      </div>
+    </div>
+
+    <!-- PERSONALIZED ACTION PLAN -->
+    <div class="report-section">
+      <h3 class="section-title"><span class="icon">🎯</span>Your 3-Step Action Plan</h3>
+
+      <div class="tip-card">
+        <h4>Step 1: Master Practical AI Tools (Week 1-2)</h4>
+        <p><strong>Your gap:</strong> Tools & Productivity at 67%.<br>
+        <strong>Action:</strong> Spend 1 hour daily on hands-on ChatGPT/Claude prompting. Focus on your specific workflow (proposals, emails, analysis). By week 2, you'll move from conceptual understanding to execution confidence.<br>
+        <strong>Expected ROI:</strong> +15% score improvement + immediately usable skills</p>
+      </div>
+
+      <div class="tip-card">
+        <h4>Step 2: Build Stakeholder Communication (Week 3-4)</h4>
+        <p><strong>Your gap:</strong> Communication & Persuasion at 0%.<br>
+        <strong>Action:</strong> Document 5 real examples where AI improved your work. Write 1-page memos explaining WHAT changed and WHY it matters to non-technical peers. This closes your highest-leverage gap.<br>
+        <strong>Expected ROI:</strong> +20% score improvement + leadership credibility boost</p>
+      </div>
+
+      <div class="tip-card">
+        <h4>Step 3: Apply in Your Role (Week 5+)</h4>
+        <p><strong>Strategy:</strong> Choose one workflow where you have 30+ minutes of manual work per week. Automate or augment it with AI. Measure time saved. Advocate for adoption to 2-3 colleagues.<br>
+        <strong>Expected ROI:</strong> Compounding skill growth + salary negotiation ammunition</p>
+      </div>
+    </div>
+
+    <!-- INDUSTRY BENCHMARK -->
+    <div class="report-section">
+      <h3 class="section-title"><span class="icon">📍</span>Where You Stand in Your Industry</h3>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">78%</div>
+          <div class="stat-label">Your Score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">58%</div>
+          <div class="stat-label">Industry Avg</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">+20</div>
+          <div class="stat-label">percentile points ahead</div>
+        </div>
+      </div>
+
+      <p style="text-align: center; color: #666; font-size: 0.9rem; margin-top: 20px;">
+        You're in the <strong>upper 25%</strong> of professionals we've assessed. <br>
+        The median score is 58%. Only 12% of test-takers score above 85%.
+      </p>
+    </div>
+
+    <!-- SALARY IMPACT -->
+    <div class="report-section" style="background: linear-gradient(135deg, #f0f8f5, #faf8f3);">
+      <h3 class="section-title" style="color: #0A1F15;">💰 How to Use This Score</h3>
+
+      <h4 style="color: #0A1F15; margin: 20px 0 12px;">In Salary Negotiations</h4>
+      <p style="color: #555; margin-bottom: 16px;">PwC's 2025 data shows AI-proficient professionals earn 56% more on average. Your 78% score positions you in the top tier. When negotiating:</p>
+
+      <ul style="margin-left: 20px; color: #555; line-height: 2;">
+        <li>"I've been formally assessed at the 78th percentile in practical AI skills — that's top 25% nationally."</li>
+        <li>"I can immediately contribute to [specific business problem], reducing manual work by ~40%."</li>
+        <li>"My AI proficiency lets me augment the team's output without additional headcount."</li>
+      </ul>
+
+      <h4 style="color: #0A1F15; margin: 20px 0 12px;">In Job Interviews</h4>
+      <p style="color: #555;">Interviewers now expect to hear about concrete AI capabilities. Your score breakdown gives you credibility:</p>
+      <ul style="margin-left: 20px; color: #555; line-height: 2;">
+        <li>"I scored in the 78th percentile on the Practical AI Skills assessment, with particular strength in strategy and workflow integration."</li>
+        <li>Walk through one of your Step 1-3 action items as a concrete example of applied AI thinking.</li>
+      </ul>
+    </div>
+
+    <!-- NEXT STEPS -->
+    <div class="report-section">
+      <h3 class="section-title"><span class="icon">📌</span>Next Steps</h3>
+
+      <p style="color: #555; font-size: 0.95rem; line-height: 1.7; margin-bottom: 20px;">
+        Your report is ready to download and share. Here's what high performers do next:
+      </p>
+
+      <ol style="margin-left: 20px; color: #555; line-height: 2;">
+        <li><strong>Print or bookmark this page</strong> — refer to it weekly as you work through the action plan.</li>
+        <li><strong>Pick Step 1 today</strong> — one hour on ChatGPT/Claude with your real workflow tasks.</li>
+        <li><strong>Track your progress</strong> — in 4 weeks, retake the assessment and watch your percentile climb.</li>
+        <li><strong>Share with your manager</strong> (optional) — "Here's where I'm investing in professional development."</li>
+      </ol>
+    </div>
+
+    <!-- FINAL CTA -->
+    <div class="report-section" style="background: linear-gradient(135deg, #0A1F15, #1B4332); color: white; text-align: center; padding: 40px;">
+      <h3 style="font-family: 'Merriweather', serif; font-size: 1.4rem; color: white; margin-bottom: 12px;">You have everything you need</h3>
+      <p style="color: rgba(255,255,255,.85); margin-bottom: 20px;">Your score. Your gaps. Your action plan. Now execute — faster than 88% of professionals will.</p>
+
+      <p style="font-size: 0.85rem; color: rgba(255,255,255,.7); margin-top: 20px;">
+        Questions? We're here to help. Reply to your confirmation email anytime.
+      </p>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>
