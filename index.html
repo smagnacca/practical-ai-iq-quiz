@@ -224,7 +224,7 @@ a{color:inherit;text-decoration:none}
 .qi-header.qi-visible{opacity:1;transform:translateY(0)}
 .qi-list{list-style:none;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:8px}
 .qi-list li{font-size:.85rem;color:var(--text);line-height:1.55;padding-left:20px;position:relative;opacity:1;transform:translateY(0);transition:opacity .7s ease,transform .7s ease;overflow:hidden}
-.qi-list li strong{color:#0A1F15;font-weight:700;display:inline-block;position:relative;background:linear-gradient(90deg,transparent 0%,rgba(201,168,76,.15) 50%,transparent 100%);background-size:200% 100%;background-position:200% 0;transition:background-position .8s ease;animation:typewriteIn 1.2s ease-out forwards,shimmerText .8s ease-out .1s}
+.qi-list li strong{color:#0A1F15;font-weight:700;display:inline-block;position:relative;background:linear-gradient(90deg,transparent 0%,rgba(201,168,76,.15) 50%,transparent 100%);background-size:200% 100%;background-position:200% 0;transition:background-position .8s ease}
 .qi-list li.qi-visible strong{animation:typewriteIn 1.2s ease-out forwards,shimmerText .8s ease-out .1s}
 .qi-list li::before{content:'→';position:absolute;left:0;color:var(--babson-green);font-weight:700}
 .qi-encouragement{font-size:.85rem;font-style:italic;color:var(--babson-green);font-weight:600;border-top:1px solid rgba(201,168,76,.25);padding-top:10px;margin-top:4px;line-height:1.5;opacity:1;transform:translateY(0);transition:opacity .8s ease,transform .8s ease;position:relative;animation:fadeInUp .8s ease}
@@ -2088,6 +2088,9 @@ function runGateEntrance(){
     if(formFields){formFields.style.transition=`opacity .5s ease, transform .5s ease`;formFields.style.opacity='1';formFields.style.transform='translateY(0)'}
   },4600);
 
+  // Step 9 (5.2s): Re-trigger Quick Tips observer now that gateSection is visible
+  setTimeout(()=>{if(window._qiObsRestart) window._qiObsRestart()},5200);
+
 }
 
 function animateCounterText(el, targetStr, dur){
@@ -3468,27 +3471,34 @@ document.addEventListener('DOMContentLoaded',()=>{
 })();
 </script>
 <script>
-/* ── Quick Tips scroll-reveal — fires when user scrolls the block into view ── */
+/* ── Quick Tips scroll-reveal — fires when qi-header scrolls into view ── */
+/* Re-observes after gateSection becomes visible (display:none blocks observers) */
 (function(){
   var triggered=false;
   var ids=['qiHeader','qiTip1','qiTip2','qiTip3','qiTip4','qiEncouragement'];
-  // stagger: 0ms, 1400ms, 2800ms, 4200ms, 5600ms, 7400ms
   var delays=[0, 1400, 2800, 4200, 5600, 7400];
   var anchor=document.getElementById('qiHeader');
   if(!anchor) return;
+  function revealTips(){
+    if(triggered) return;
+    triggered=true;
+    ids.forEach(function(id,i){
+      setTimeout(function(){
+        var el=document.getElementById(id);
+        if(el) el.classList.add('qi-visible');
+      }, delays[i]);
+    });
+  }
   var obs=new IntersectionObserver(function(entries){
-    if(entries[0].isIntersecting && !triggered){
-      triggered=true;
-      ids.forEach(function(id,i){
-        setTimeout(function(){
-          var el=document.getElementById(id);
-          if(el) el.classList.add('qi-visible');
-        }, delays[i]);
-      });
-      obs.disconnect();
-    }
-  },{threshold:0.3, rootMargin:'0px 0px -40px 0px'});
+    if(entries[0].isIntersecting) revealTips();
+  },{threshold:0.1});
   obs.observe(anchor);
+  /* Expose so runGateEntrance can re-trigger observation after display:none→block */
+  window._qiObsRestart=function(){
+    if(triggered) return;
+    obs.unobserve(anchor);
+    obs.observe(anchor);
+  };
 })();
 </script>
 
