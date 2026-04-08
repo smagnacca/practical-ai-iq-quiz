@@ -613,64 +613,27 @@ exports.handler = async () => {
 
       const data = { firstName, score, industry, cats };
 
-      // Follow-up 1: Send after 2 hours (price teaser)
-      if (hoursSince >= 2 && !fu1Sent) {
-        try {
-          await sendFollowUp(email, 'followup1', data);
-          await updateCell(token, `V${rowNum}`, 'TRUE');
-          sent++;
-          console.log(`Follow-up 1 sent to ${email}`);
-        } catch (e) { console.error(`FU1 failed for ${email}:`, e.message); }
-      }
+      // ONE email per lead per scheduler run — find the next unsent email due and send only that one.
+      // This prevents batched sends when a lead has multiple overdue emails (e.g. after a data gap).
+      const schedule = [
+        { minHours: 2,  sent: fu1Sent, type: 'followup1', col: `V${rowNum}` },
+        { minHours: 4,  sent: fu2Sent, type: 'followup2', col: `W${rowNum}` },
+        { minHours: 6,  sent: fu3Sent, type: 'followup3', col: `X${rowNum}` },
+        { minHours: 8,  sent: fu4Sent, type: 'followup4', col: `Y${rowNum}` },
+        { minHours: 24, sent: fu5Sent, type: 'followup5', col: `Z${rowNum}` },
+        { minHours: 60, sent: fu6Sent, type: 'followup6', col: `AA${rowNum}` },
+      ];
 
-      // Follow-up 2: Send after 4 hours (urgency/scarcity)
-      if (hoursSince >= 4 && !fu2Sent) {
-        try {
-          await sendFollowUp(email, 'followup2', data);
-          await updateCell(token, `W${rowNum}`, 'TRUE');
-          sent++;
-          console.log(`Follow-up 2 sent to ${email}`);
-        } catch (e) { console.error(`FU2 failed for ${email}:`, e.message); }
-      }
-
-      // Follow-up 3: Send after 6 hours (insight-focused, myIQ style)
-      if (hoursSince >= 6 && !fu3Sent) {
-        try {
-          await sendFollowUp(email, 'followup3', data);
-          await updateCell(token, `X${rowNum}`, 'TRUE');
-          sent++;
-          console.log(`Follow-up 3 sent to ${email}`);
-        } catch (e) { console.error(`FU3 failed for ${email}:`, e.message); }
-      }
-
-      // Follow-up 4: Send after 8 hours (rarity/curiosity, MyIQ-inspired)
-      if (hoursSince >= 8 && !fu4Sent) {
-        try {
-          await sendFollowUp(email, 'followup4', data);
-          await updateCell(token, `Y${rowNum}`, 'TRUE');
-          sent++;
-          console.log(`Follow-up 4 sent to ${email}`);
-        } catch (e) { console.error(`FU4 failed for ${email}:`, e.message); }
-      }
-
-      // Follow-up 5: Send after 24 hours (final urgency/FOMO)
-      if (hoursSince >= 24 && !fu5Sent) {
-        try {
-          await sendFollowUp(email, 'followup5', data);
-          await updateCell(token, `Z${rowNum}`, 'TRUE');
-          sent++;
-          console.log(`Follow-up 5 sent to ${email}`);
-        } catch (e) { console.error(`FU5 failed for ${email}:`, e.message); }
-      }
-
-      // Follow-up 6: Send after 60 hours (~2.5 days) — "Almost didn't send this" — true final email
-      if (hoursSince >= 60 && !fu6Sent) {
-        try {
-          await sendFollowUp(email, 'followup6', data);
-          await updateCell(token, `AA${rowNum}`, 'TRUE');
-          sent++;
-          console.log(`Follow-up 6 sent to ${email}`);
-        } catch (e) { console.error(`FU6 failed for ${email}:`, e.message); }
+      for (const step of schedule) {
+        if (hoursSince >= step.minHours && !step.sent) {
+          try {
+            await sendFollowUp(email, step.type, data);
+            await updateCell(token, step.col, 'TRUE');
+            sent++;
+            console.log(`${step.type} sent to ${email}`);
+          } catch (e) { console.error(`${step.type} failed for ${email}:`, e.message); }
+          break; // Only send ONE email per lead per scheduler run
+        }
       }
     }
 

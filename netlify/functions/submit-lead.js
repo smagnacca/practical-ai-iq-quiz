@@ -106,8 +106,8 @@ exports.handler = async (event) => {
 
     // Pad to ensure consistent columns (12 questions + 7 meta + 1 cats = 20 cols)
     while (row.length < 20) row.push("");
-    // Columns U, V, W, X: Paid status, FollowUp1Sent, FollowUp2Sent, FollowUp3Sent (for email automation)
-    row.push("FALSE", "FALSE", "FALSE", "FALSE");
+    // Columns U–AA: Paid, FU1Sent, FU2Sent, FU3Sent, FU4Sent, FU5Sent, FU6Sent (7 columns for email automation)
+    row.push("FALSE", "FALSE", "FALSE", "FALSE", "FALSE", "FALSE", "FALSE");
 
     await appendRow(token, row);
 
