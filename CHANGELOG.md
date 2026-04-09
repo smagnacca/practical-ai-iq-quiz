@@ -1,5 +1,23 @@
 # Changelog — Practical AI Skills IQ Quiz
 
+## v23 — 5 UX improvements: immediate email, 0% ring fix, retry logic, mobile canvas, timer cleanup (2026-04-09)
+
+### Summary
+Five improvements from QA audit recommendations, implemented directly in Claude Code.
+
+### Changes
+1. **Immediate confirmation email** — New `netlify/functions/send-immediate-email.js` fires on quiz completion (non-blocking). Sends personalized score summary with category breakdown, tier badge, peer context, and $1 CTA. Called from `submitQuizData()` alongside the Sheets capture.
+2. **0% score ring fix** — Ring no longer renders as completely empty when score is 0%. A 3% minimum visual arc is shown so the ring always looks intentional, while the counter still displays the true "0%" value.
+3. **submit-lead cold-start retry** — If the Google Sheets capture returns a non-2xx or throws (Netlify cold start), the frontend automatically retries once after 3 seconds. Prevents silent lead loss on first submission after inactivity.
+4. **Canvas orientationchange listener** — Both `#confettiCanvas` and `#particleCanvas` now listen for `orientationchange` in addition to `resize`, fixing canvas clipping on mobile rotation.
+5. **Quiz nudge timer cleanup** — `#countdownTimer` (the 30s nudge timer element) is now hidden when `showResults()` fires, so it no longer appears frozen at "5:00" on the results page.
+
+### Files Changed
+- `index.html` — 5 targeted edits
+- `netlify/functions/send-immediate-email.js` — new file (100 lines)
+
+---
+
 ## v22 — Fix canvas sizing: confetti and particle effects now full-viewport (2026-04-09)
 
 ### Summary

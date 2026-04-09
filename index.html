@@ -2635,6 +2635,9 @@ function revealSequence(ids,delay=700){
 
 function showResults(){
   clearInterval(timer);stopNudgeTimer();
+  // Hide quiz nudge timer so it doesn't appear frozen at "5:00" on the results page
+  const nudgeTimer=document.getElementById('countdownTimer');
+  if(nudgeTimer)nudgeTimer.style.display='none';
   const r=calculateResults();
   // Show computing overlay for 5s, then reveal results
   showComputingOverlay(()=>_renderResults(r));
@@ -2732,7 +2735,9 @@ function _renderResults(r){
     const numEl   = document.getElementById('scoreNum');
 
     if(scoreEl && peerEl && numEl){
-      const scoreOffset = CIRCUMFERENCE * (1 - SCORE / 100);
+      // Use a 3% minimum visual arc so the ring never looks broken on a 0% score
+      const visualPct = Math.max(SCORE, SCORE === 0 ? 3 : 0);
+      const scoreOffset = CIRCUMFERENCE * (1 - visualPct / 100);
       const peerOffset  = CIRCUMFERENCE * (1 - 58 / 100); // peer avg always 58%
 
       setTimeout(()=>{
@@ -2755,7 +2760,7 @@ function _renderResults(r){
   const canvas = document.getElementById('confettiCanvas');
   const ctx = canvas.getContext('2d');
   const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
-  resize(); window.addEventListener('resize', resize);
+  resize(); window.addEventListener('resize', resize); window.addEventListener('orientationchange', resize);
 
   const pieces = [];
   const colors = ['#EEAF00','#DDD055','#006644','#27AE60','#ffffff','#FFE566'];
@@ -2969,7 +2974,7 @@ function typewriter(el, text, speed=28){
   let W, H, particles=[], mouse={x:-999,y:-999};
 
   function resize(){ W=canvas.width=canvas.offsetWidth; H=canvas.height=canvas.offsetHeight; }
-  resize(); window.addEventListener('resize',resize);
+  resize(); window.addEventListener('resize',resize); window.addEventListener('orientationchange',resize);
   canvas.addEventListener('mousemove',e=>{
     const r=canvas.getBoundingClientRect();
     mouse.x=e.clientX-r.left; mouse.y=e.clientY-r.top;
@@ -3456,13 +3461,20 @@ function closeExitModal(){
 
 function submitQuizData(results){
   const payload={timestamp:new Date().toISOString(),firstName:userData.firstName,email:userData.email,industry:userData.industry||'',score:results.pct,totalCorrect:results.totalCorrect,totalQuestions:results.totalQuestions,categories:results.cats,answers:answers.map((a,i)=>({question:i+1,category:QUESTIONS[i].category,selected:a?.selected??-1,correct:a?.correct,isCorrect:a?.isCorrect??false,timedOut:a?.timedOut??false,timeTaken:a?.timeTaken??0})),completionTime:Math.round((Date.now()-quizStartTime)/1000)};
-  // Fire-and-forget POST to Netlify Function → Google Sheets (non-blocking)
-  fetch('/.netlify/functions/submit-lead',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(payload)
-  }).then(r=>{if(r.ok)console.log('Lead captured to Google Sheets');else console.warn('Lead capture response:',r.status)})
-    .catch(err=>console.warn('Lead capture failed (non-blocking):',err));
-  console.log('Quiz submission:',JSON.stringify(payload,null,2));
+
+  // Fire-and-forget POST to Google Sheets — retries once after 3s on cold-start 500
+  function postLead(isRetry){
+    fetch('/.netlify/functions/submit-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+      .then(r=>{if(r.ok)console.log('Lead captured to Google Sheets');else if(!isRetry){console.warn('Lead capture '+r.status+', retrying in 3s…');setTimeout(()=>postLead(true),3000);}else console.warn('Lead capture failed after retry:',r.status);})
+      .catch(err=>{if(!isRetry){console.warn('Lead capture error, retrying in 3s…',err);setTimeout(()=>postLead(true),3000);}else console.warn('Lead capture error after retry:',err);});
+  }
+  postLead(false);
+
+  // Send immediate confirmation email (non-blocking)
+  fetch('/.netlify/functions/send-immediate-email',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({firstName:userData.firstName,email:userData.email,industry:userData.industry||'',score:results.pct,categories:results.cats})
+  }).then(r=>{if(r.ok)console.log('Confirmation email sent');else console.warn('Confirmation email status:',r.status);})
+    .catch(err=>console.warn('Confirmation email failed (non-blocking):',err));
 }
 
 // Exit intent detection (desktop only)
